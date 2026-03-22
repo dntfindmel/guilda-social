@@ -1,0 +1,36 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: guilda-postgres
+    environment:
+      POSTGRES_DB: guilda_social
+      POSTGRES_USER: guilda_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-guilda_pass}
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    command: >
+      postgres
+      -c ssl=on
+      -c ssl_cert_file=/var/lib/postgresql/server.crt
+      -c ssl_key_file=/var/lib/postgresql/server.key
+    networks:
+      - guilda-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U guilda_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
+networks:
+  guilda-network:
+    driver: bridge
