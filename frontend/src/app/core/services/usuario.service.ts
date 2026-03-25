@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Usuario } from '../models/usuario.model';
+import { Usuario, CriarUsuarioDTO } from '../models/usuario.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,9 +11,8 @@ export class UsuarioService {
 
   constructor(private http: HttpClient) {}
 
-  criarUsuario(usuario: Partial<Usuario>, senha: string): Observable<Usuario> {
-    const payload = { ...usuario, senha };
-    return this.http.post<Usuario>(this.apiUrl, payload);
+  criarUsuario(usuario: CriarUsuarioDTO): Observable<Usuario> {
+    return this.http.post<Usuario>(this.apiUrl, usuario);
   }
 
   buscarPorId(id: string): Observable<Usuario> {
@@ -22,5 +21,13 @@ export class UsuarioService {
 
   listarTodos(usuarioId: string): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(`${this.apiUrl}?usuarioId=${usuarioId}`);
+  }
+
+  atualizarUsuario(id: string, usuario: Partial<Usuario>): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.apiUrl}/${id}`, usuario);
+  }
+
+  deletarUsuario(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }
