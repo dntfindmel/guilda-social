@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #F1F5F9;
+  background: #221e10da;
 }
 
 /* ============================================ */
@@ -16,7 +16,7 @@
 .perfil-card {
   max-width: 640px;
   width: 100%;
-  background: #FFFFFF;
+  background: #221E10;
   border-radius: 24px;
   padding: 2rem;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
@@ -40,7 +40,7 @@
 /* ============================================ */
 .divider {
   height: 1px;
-  background: #E2E8F0;
+  background: #F4C025;
   margin: 1.5rem 0;
 }
 
@@ -157,8 +157,8 @@ h2 {
 .form-group select {
   width: 100%;
   padding: 0.6rem 0.75rem;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #221E10;
+  border: 1px solid #F4C025;
   border-radius: 12px;
   font-size: 0.875rem;
   font-family: 'Inter', sans-serif;
@@ -191,8 +191,8 @@ h2 {
 .sobre-section textarea {
   width: 100%;
   padding: 0.75rem;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #221E10;
+  border: 1px solid #F4C025;
   border-radius: 16px;
   font-size: 0.875rem;
   font-family: 'Inter', sans-serif;
@@ -267,7 +267,7 @@ h2 {
 .option-text {
   margin-left: 10px;
   font-size: 0.875rem;
-  color: #221E10;
+  color: #F1F5F9;
 }
 
 /* ============================================ */
