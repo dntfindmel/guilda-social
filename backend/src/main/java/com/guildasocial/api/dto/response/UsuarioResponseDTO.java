@@ -27,6 +27,8 @@ public class UsuarioResponseDTO {
     private String estado;
     private Double latitude;
     private Double longitude;
+    private String descricao;
+    private String fotoPerfil;
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dataCadastro;
