@@ -1,19 +1,48 @@
-# Build stage
-FROM maven:3.9-eclipse-temurin-17 AS build
+# backend/Dockerfile
+
+# Estágio 1: Build
+FROM maven:3.9-eclipse-temurin-21 AS build
+
 WORKDIR /app
+
+# Copiar arquivos de configuração
 COPY pom.xml .
-RUN mvn dependency:go-offline
+COPY mvnw .
+COPY .mvn .mvn
+
+# Baixar dependências
+RUN mvn dependency:go-offline -B
+
+# Copiar código fonte
 COPY src ./src
+
+# Build da aplicação
 RUN mvn clean package -DskipTests
 
-# Run stage
-FROM eclipse-temurin:17-jre-alpine
-WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+# Estágio 2: Execução
+FROM eclipse-temurin:21-jre-alpine
 
-# Create user for security
+# Instalar curl para healthcheck
+RUN apk add --no-cache curl
+
+# Criar usuário não-root para segurança
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
+WORKDIR /app
+
+# Criar pasta para logs
+RUN mkdir -p /app/logs
+
+# Copiar JAR do estágio de build
+COPY --from=build /app/target/*.jar app.jar
+
+# Expor porta da aplicação
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:8080/actuator/health || exit 1
+
+# Comando de entrada
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=docker", "-Djava.security.egd=file:/dev/./urandom", "app.jar"]
