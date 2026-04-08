@@ -357,23 +357,22 @@ Sprint 3	Semana 5-6	✅ Concluída	Matchmaking, Sugestões, Cards
 Sprint 4	Semana 7-8	🔄 Em desenvolvimento	Perfil, Edição, Configurações
 Sprint 5	Semana 9-10	⏳ Pendente	Grupos, Chat, Eventos
 Sprint 6	Semana 11-12	⏳ Pendente	Notificações, PWA completo
+```
+
 👥 Contribuidores
 Nome	Papel	GitHub
 Melyssa Vitória da Silva Moya	Desenvolvedora Full Stack	@melyssamoya
-Leonardo Alves	Desenvolvedor Full Stack	@leonardoalves
+
 📄 Licença
 Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
 
 📞 Contato
-Email: contato@guildasocial.com
+Email: moyamelyssa@gmail.com
 
 GitHub: github.com/guilda-social
 
 🙏 Agradecimentos
 FATEC Ipiranga - Pastor Enéas Tognini
-
 Laboratório de Engenharia de Software
-
 Comunidade open source pelas ferramentas incríveis
-
 Desenvolvido com 💛 para conectar jogadores 🎮
