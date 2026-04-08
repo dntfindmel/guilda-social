@@ -1,12 +1,16 @@
-<div class="perfil-container">
-  <div class="perfil-card">
-    <!-- Título -->
-    <h1 class="titulo-principal">Crie seu perfil</h1>
+<div class="cadastro-container">
+  <div class="cadastro-card">
+    <div class="logo">
+      <h1>Guilda Social</h1>
+      <p>Crie sua conta e comece a jogar!</p>
+    </div>
 
-    <!-- Formulário -->
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
     <form [formGroup]="cadastroForm" (ngSubmit)="cadastrar()">
-
-      <!-- Seção Foto de Perfil -->
+      <!-- Foto de Perfil -->
       <div class="foto-section">
         <div class="foto-label">FOTO DE PERFIL</div>
         <div class="foto-placeholder" (click)="selecionarFoto()">
@@ -20,149 +24,134 @@
         <button type="button" class="btn-escolher-foto" (click)="selecionarFoto()">
           Escolher foto
         </button>
-        <input
-          type="file"
-          #fotoInput
-          (change)="onFotoSelecionada($event)"
-          accept="image/*"
-          style="display: none">
+        <input type="file" #fotoInput (change)="onFotoSelecionada($event)" accept="image/*" style="display: none">
       </div>
 
-      <!-- Linha divisória -->
       <div class="divider"></div>
 
-      <!-- Seção Informações Pessoais -->
-      <div class="info-section">
-        <h2>Informações pessoais</h2>
+      <!-- Informações pessoais -->
+      <h2>Informações pessoais</h2>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label>Nome</label>
-            <input
-              type="text"
-              formControlName="nome"
-              placeholder="ex: Melyssa"
-              [class.invalid]="cadastroForm.get('nome')?.invalid && cadastroForm.get('nome')?.touched">
-          </div>
+      <div class="form-group">
+        <label>Nome completo *</label>
+        <input type="text" formControlName="nome" placeholder="Digite seu nome"
+          [class.invalid]="cadastroForm.get('nome')?.invalid && cadastroForm.get('nome')?.touched">
+        <div class="error" *ngIf="cadastroForm.get('nome')?.invalid && cadastroForm.get('nome')?.touched">
+          Nome é obrigatório
+        </div>
+      </div>
 
-          <div class="form-group">
-            <label>Idade</label>
-            <input
-              type="number"
-              formControlName="idade"
-              placeholder="Sua idade"
-              [class.invalid]="cadastroForm.get('idade')?.invalid && cadastroForm.get('idade')?.touched">
+      <div class="row">
+        <div class="form-group col">
+          <label>Data de Nascimento *</label>
+          <input type="date" formControlName="dataNascimento"
+            [class.invalid]="cadastroForm.get('dataNascimento')?.invalid && cadastroForm.get('dataNascimento')?.touched">
+          <div class="error" *ngIf="cadastroForm.get('dataNascimento')?.invalid && cadastroForm.get('dataNascimento')?.touched">
+            Data de nascimento inválida (mínimo 13 anos)
           </div>
         </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Cidade *</label>
-            <input
-              type="text"
-              formControlName="cidade"
-              placeholder="Sua cidade"
-              [class.invalid]="cadastroForm.get('cidade')?.invalid && cadastroForm.get('cidade')?.touched">
-          </div>
-
-          <div class="form-group">
-            <label>Estado *</label>
-            <select
-              formControlName="estado"
-              [class.invalid]="cadastroForm.get('estado')?.invalid && cadastroForm.get('estado')?.touched">
-              <option value="">Selecione</option>
-              <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
-            </select>
-          </div>
+        <div class="form-group col">
+          <label>Telefone</label>
+          <input type="tel" formControlName="telefone" placeholder="(11) 99999-9999">
         </div>
+      </div>
 
-        <div class="form-group">
+      <div class="row">
+        <div class="form-group col">
+          <label>Cidade *</label>
+          <input type="text" formControlName="cidade" placeholder="Sua cidade"
+            [class.invalid]="cadastroForm.get('cidade')?.invalid && cadastroForm.get('cidade')?.touched">
+        </div>
+        <div class="form-group col">
+          <label>Estado *</label>
+          <select formControlName="estado"
+            [class.invalid]="cadastroForm.get('estado')?.invalid && cadastroForm.get('estado')?.touched">
+            <option value="">Selecione</option>
+            <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group col">
           <label>E-mail *</label>
-          <input
-            type="email"
-            formControlName="email"
-            placeholder="seu@email.com"
+          <input type="email" formControlName="email" placeholder="seu@email.com"
             [class.invalid]="cadastroForm.get('email')?.invalid && cadastroForm.get('email')?.touched">
+          <div class="error" *ngIf="cadastroForm.get('email')?.invalid && cadastroForm.get('email')?.touched">
+            E-mail válido é obrigatório
+          </div>
         </div>
-
-        <div class="form-group">
+        <div class="form-group col">
           <label>Senha *</label>
-          <input
-            type="password"
-            formControlName="senha"
-            placeholder="******"
+          <input type="password" formControlName="senha" placeholder="******"
             [class.invalid]="cadastroForm.get('senha')?.invalid && cadastroForm.get('senha')?.touched">
         </div>
       </div>
 
-      <!-- Linha divisória -->
-      <div class="divider"></div>
-
-      <!-- Seção Sobre Você -->
-      <div class="sobre-section">
-        <h2>Fale um pouco de você</h2>
-        <textarea
-          formControlName="descricao"
-          rows="4"
-          placeholder="Conte sobre suas histórias épicas e seus gostos pessoais">
-        </textarea>
-      </div>
-
-      <!-- Linha divisória -->
-      <div class="divider"></div>
-
-      <!-- Seção Interesses -->
-      <div class="interesses-section">
-        <h2>Interesses</h2>
-        <p class="subtitulo">Quais tipos de jogos está procurando?</p>
-
-        <div class="interesses-opcoes">
-          <label class="interesse-option">
-            <input type="checkbox" formControlName="interesseTabuleiro">
-            <span class="checkmark"></span>
-            <span class="option-text">Jogos de Tabuleiro</span>
-          </label>
-
-          <label class="interesse-option">
-            <input type="checkbox" formControlName="interesseCartas">
-            <span class="checkmark"></span>
-            <span class="option-text">Jogos de Cartas</span>
-          </label>
-
-          <label class="interesse-option">
-            <input type="checkbox" formControlName="interesseRPG">
-            <span class="checkmark"></span>
-            <span class="option-text">RPG (Role-Playing Games)</span>
-          </label>
+      <div class="form-group">
+        <label>Confirmar senha *</label>
+        <input type="password" formControlName="confirmarSenha" placeholder="******"
+          [class.invalid]="cadastroForm.errors?.['senhasDiferentes'] && cadastroForm.get('confirmarSenha')?.touched">
+        <div class="error" *ngIf="cadastroForm.errors?.['senhasDiferentes'] && cadastroForm.get('confirmarSenha')?.touched">
+          As senhas não conferem
         </div>
       </div>
 
-      <!-- Linha divisória -->
       <div class="divider"></div>
 
-      <!-- Termos e Botão -->
-      <div class="footer">
-        <div class="termos">
-          <label class="termos-checkbox">
-            <input type="checkbox" formControlName="aceitaTermos">
-            <span class="checkmark"></span>
-            <span class="termos-text">Ao se inscrever, concorda com os <a href="#">termos</a>.</span>
-          </label>
-        </div>
-
-        <button
-          type="submit"
-          class="btn-finalizar"
-          [disabled]="loading || !cadastroForm.valid">
-          <span *ngIf="!loading">Finalizar perfil</span>
-          <span *ngIf="loading" class="loading-spinner"></span>
-        </button>
+      <!-- Sobre você -->
+      <h2>Sobre você</h2>
+      <div class="form-group">
+        <textarea formControlName="descricao" rows="4"
+          placeholder="Conte sobre suas histórias épicas e seus gostos pessoais"></textarea>
       </div>
 
-      <!-- Mensagem de erro -->
-      <div class="error-message" *ngIf="errorMessage">
-        {{ errorMessage }}
+      <div class="divider"></div>
+
+      <!-- Interesses -->
+      <h2>Interesses</h2>
+      <p class="subtitulo">Quais tipos de jogos está procurando?</p>
+
+      <div class="interesses-opcoes">
+        <label class="interesse-option">
+          <input type="checkbox" formControlName="interesseTabuleiro">
+          <span class="checkmark"></span>
+          <span class="option-text">🎲 Jogos de Tabuleiro</span>
+        </label>
+
+        <label class="interesse-option">
+          <input type="checkbox" formControlName="interesseCartas">
+          <span class="checkmark"></span>
+          <span class="option-text">🃏 Jogos de Cartas</span>
+        </label>
+
+        <label class="interesse-option">
+          <input type="checkbox" formControlName="interesseRPG">
+          <span class="checkmark"></span>
+          <span class="option-text">🐉 RPG (Role-Playing Games)</span>
+        </label>
       </div>
+
+      <div class="divider"></div>
+
+      <!-- Termos -->
+      <div class="termos">
+        <label class="termos-checkbox">
+          <input type="checkbox" formControlName="aceitaTermos">
+          <span class="checkmark"></span>
+          <span class="termos-text">Ao se inscrever, concorda com os <a href="#">termos</a>.</span>
+        </label>
+      </div>
+
+      <!-- Botão -->
+      <button type="submit" class="btn-finalizar" [disabled]="loading">
+        <span *ngIf="!loading">Finalizar cadastro</span>
+        <span *ngIf="loading" class="loading-spinner"></span>
+      </button>
     </form>
+
+    <div class="login-link">
+      Já tem uma conta? <a href="/login">Faça login</a>
+    </div>
   </div>
 </div>

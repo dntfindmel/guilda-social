@@ -1,7 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Usuario, CriarUsuarioDTO } from '../models/usuario.model';
+import { Usuario } from '../models/usuario.model';
+
+export interface CriarUsuarioDTO {
+  nome: string;
+  email: string;
+  dataNascimento: Date;
+  cidade: string;
+  estado: string;
+  telefone?: string;        // opcional
+  descricao?: string;       // opcional
+  interesses?: string[];    // opcional
+  fotoPerfil?: string;      // opcional
+  latitude?: number;        // opcional
+  longitude?: number;       // opcional
+}
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +25,9 @@ export class UsuarioService {
 
   constructor(private http: HttpClient) {}
 
-  criarUsuario(usuario: CriarUsuarioDTO): Observable<Usuario> {
-    return this.http.post<Usuario>(this.apiUrl, usuario);
+  criarUsuario(usuario: CriarUsuarioDTO, senha: string): Observable<Usuario> {
+    const payload = { ...usuario, senha };
+    return this.http.post<Usuario>(this.apiUrl, payload);
   }
 
   buscarPorId(id: string): Observable<Usuario> {

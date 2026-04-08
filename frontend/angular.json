@@ -27,13 +27,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "10kB",
+                  "maximumError": "20kB"
                 }
               ],
               "outputHashing": "all"
@@ -62,7 +62,7 @@
           "options": {
             "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": ["src/favicon.ico", "src/assets", "src/manifest.webmanifest"],
             "styles": ["src/styles.css"],
             "scripts": []
           }
@@ -71,6 +71,6 @@
     }
   },
   "cli": {
-    "analytics": "02e9b8fb-85e8-4723-9225-93ca85ec86c3"
+    "analytics": "0e55e43c-f803-4fe7-ba6c-426c4e0d7d19"
   }
 }

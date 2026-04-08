@@ -1,0 +1,12 @@
+{
+  "name": "Guilda Social",
+  "short_name": "Guilda",
+  "description": "Encontre parceiros para jogos presenciais",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F1F5F9",
+  "theme_color": "#F4C025",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": []
+}

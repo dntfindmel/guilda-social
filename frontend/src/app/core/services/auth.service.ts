@@ -1,4 +1,3 @@
-// frontend/src/app/core/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
@@ -36,34 +35,79 @@ export class AuthService {
 
   private loadStoredUser(): void {
     const token = this.tokenService.getToken();
-    const userData = localStorage.getItem('currentUser');
-    if (token && userData) {
-      this.currentUserSubject.next(JSON.parse(userData));
+    const usuarioId = localStorage.getItem('usuarioId');
+    const usuarioNome = localStorage.getItem('usuarioNome');
+
+    console.log('loadStoredUser - Token:', token ? 'existe' : 'não existe');
+    console.log('loadStoredUser - usuarioId:', usuarioId);
+
+    if (token && usuarioId) {
+      this.currentUserSubject.next({
+        token,
+        type: 'Bearer',
+        usuarioId,
+        nome: usuarioNome || '',
+        email: ''
+      });
     }
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
+        console.log('Login bem-sucedido:', response);
+        console.log('Salvando usuarioId:', response.usuarioId);
+        console.log('Salvando nome:', response.nome);
+
         this.tokenService.saveToken(response.token);
-        localStorage.setItem('currentUser', JSON.stringify(response));
+        localStorage.setItem('usuarioId', response.usuarioId);
+        localStorage.setItem('usuarioNome', response.nome);
         this.currentUserSubject.next(response);
+
+        // Verificar se salvou
+        console.log('Verificação - usuarioId salvo:', localStorage.getItem('usuarioId'));
       })
     );
   }
 
   logout(): void {
+    console.log('Logout - limpando dados');
     this.tokenService.removeToken();
+    localStorage.removeItem('usuarioId');
+    localStorage.removeItem('usuarioNome');
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
 
   isAuthenticated(): boolean {
-    return this.tokenService.hasToken() && this.currentUserSubject.value !== null;
+    const token = this.tokenService.getToken();
+    const usuarioId = localStorage.getItem('usuarioId');
+    const isAuth = token !== null && usuarioId !== null;
+    console.log('isAuthenticated:', isAuth, 'token:', !!token, 'usuarioId:', !!usuarioId);
+    return isAuth;
   }
 
   getCurrentUser(): LoginResponse | null {
-    return this.currentUserSubject.value;
+    const token = this.tokenService.getToken();
+    const usuarioId = localStorage.getItem('usuarioId');
+    const usuarioNome = localStorage.getItem('usuarioNome');
+
+    if (token && usuarioId) {
+      return {
+        token,
+        type: 'Bearer',
+        usuarioId,
+        nome: usuarioNome || '',
+        email: ''
+      };
+    }
+    return null;
+  }
+
+  getUsuarioId(): string | null {
+    const id = localStorage.getItem('usuarioId');
+    console.log('getUsuarioId retornando:', id);
+    return id;
   }
 }

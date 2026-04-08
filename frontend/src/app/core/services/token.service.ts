@@ -1,4 +1,3 @@
-// frontend/src/app/core/services/token.service.ts
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -8,18 +7,26 @@ export class TokenService {
   private readonly TOKEN_KEY = 'auth_token';
 
   saveToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
+    console.log('Salvando token:', token.substring(0, 20) + '...');
+    if (token) {
+      localStorage.setItem(this.TOKEN_KEY, token);
+    }
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    const token = localStorage.getItem(this.TOKEN_KEY);
+    console.log('Token recuperado:', token ? 'sim' : 'não');
+    return token;
   }
 
   removeToken(): void {
+    console.log('Removendo token');
     localStorage.removeItem(this.TOKEN_KEY);
   }
 
   hasToken(): boolean {
-    return !!this.getToken();
+    const has = this.getToken() !== null;
+    console.log('hasToken:', has);
+    return has;
   }
 }

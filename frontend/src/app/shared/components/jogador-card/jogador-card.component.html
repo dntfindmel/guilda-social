@@ -1,0 +1,36 @@
+<div class="jogador-card">
+  <div class="card-content">
+    <!-- Avatar -->
+    <div class="avatar" [style.backgroundColor]="'#6C63FF'">
+      {{ getInitials() }}
+    </div>
+
+    <!-- Informações -->
+    <div class="info">
+      <h3>{{ jogador.nome }}</h3>
+
+      <div class="tags">
+        <span class="tag localizacao">
+          📍 {{ jogador.cidade }}/{{ jogador.estado }}
+        </span>
+        <span class="tag afinidade {{ getAfinidadeClass() }}">
+          🎯 {{ jogador.nivelAfinidade }}% match
+        </span>
+      </div>
+
+      <p class="descricao" *ngIf="jogador.descricao">
+        {{ jogador.descricao | slice:0:100 }}...
+      </p>
+    </div>
+
+    <!-- Ações -->
+    <div class="actions">
+      <button class="btn-icon" (click)="onVerPerfil.emit()" title="Ver perfil">
+        👤
+      </button>
+      <button class="btn-conectar" (click)="onConectar.emit()">
+        Conectar
+      </button>
+    </div>
+  </div>
+</div>

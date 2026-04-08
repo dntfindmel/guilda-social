@@ -1,13 +1,13 @@
 import { Component, OnInit, inject, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { UsuarioService } from '../../../core/services/usuario.service';
+import { Router } from '@angular/router';
+import { UsuarioService, CriarUsuarioDTO } from '../../../core/services/usuario.service';
 
 @Component({
   selector: 'app-cadastro',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],  
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './cadastro.component.html',
   styleUrls: ['./cadastro.component.css']
 })
@@ -23,37 +23,64 @@ export class CadastroComponent implements OnInit {
   errorMessage = '';
   fotoPreview: string | undefined;
 
-  // Lista de estados brasileiros
   estados = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
 
   constructor() {
     this.cadastroForm = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      idade: ['', [Validators.required, Validators.min(13), Validators.max(120)]],
+      email: ['', [Validators.required, Validators.email]],
+      senha: ['', [Validators.required, Validators.minLength(6)]],
+      confirmarSenha: ['', Validators.required],
+      dataNascimento: ['', [Validators.required, this.validarIdade]],
+      telefone: ['', [Validators.pattern(/^\(?[1-9]{2}\)? ?(?:[2-8]|9[1-9])[0-9]{3}-?[0-9]{4}$/)]],
+      cidade: ['', Validators.required],
+      estado: ['', Validators.required],
       descricao: ['', [Validators.maxLength(500)]],
       interesseTabuleiro: [false],
       interesseCartas: [false],
       interesseRPG: [false],
       aceitaTermos: [false, Validators.requiredTrue],
-      email: ['', [Validators.required, Validators.email]],
-      senha: ['', [Validators.required, Validators.minLength(6)]],
-      cidade: ['', Validators.required],
-      estado: ['', Validators.required]
-    });
+      latitude: [null],
+      longitude: [null]
+    }, { validators: this.checkSenhas });
   }
 
   ngOnInit(): void {
     this.obterLocalizacao();
   }
 
+  checkSenhas(group: FormGroup): ValidationErrors | null {
+    const senha = group.get('senha')?.value;
+    const confirmar = group.get('confirmarSenha')?.value;
+    return senha === confirmar ? null : { senhasDiferentes: true };
+  }
+
+  validarIdade(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+
+    const dataNascimento = new Date(control.value);
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - dataNascimento.getFullYear();
+    const mes = hoje.getMonth() - dataNascimento.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoje.getDate() < dataNascimento.getDate())) {
+      idade--;
+    }
+
+    return idade >= 13 ? null : { menorIdade: true };
+  }
+
   obterLocalizacao(): void {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log('Localização obtida');
+          this.cadastroForm.patchValue({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          });
         },
         (error) => {
-          console.log('Localização não permitida');
+          console.log('Localização não permitida pelo usuário');
         }
       );
     }
@@ -80,32 +107,41 @@ export class CadastroComponent implements OnInit {
       this.loading = true;
       this.errorMessage = '';
 
+      // Coletar interesses (convertendo null para undefined)
       const interesses: string[] = [];
       if (this.cadastroForm.get('interesseTabuleiro')?.value) interesses.push('TABULEIRO');
       if (this.cadastroForm.get('interesseCartas')?.value) interesses.push('CARD_GAME');
       if (this.cadastroForm.get('interesseRPG')?.value) interesses.push('RPG_MESA');
 
-      const usuarioData = {
+      // Construir objeto do tipo CriarUsuarioDTO
+      const usuarioData: CriarUsuarioDTO = {
         nome: this.cadastroForm.get('nome')?.value,
         email: this.cadastroForm.get('email')?.value,
-        senha: this.cadastroForm.get('senha')?.value,
-        dataNascimento: this.calcularDataNascimento(this.cadastroForm.get('idade')?.value),
+        dataNascimento: this.cadastroForm.get('dataNascimento')?.value,
         cidade: this.cadastroForm.get('cidade')?.value,
         estado: this.cadastroForm.get('estado')?.value,
+        // Campos opcionais: usar undefined em vez de null
+        telefone: this.cadastroForm.get('telefone')?.value || undefined,
         descricao: this.cadastroForm.get('descricao')?.value || undefined,
         interesses: interesses.length > 0 ? interesses : undefined,
-        fotoPerfil: this.fotoPreview || undefined
+        fotoPerfil: this.fotoPreview || undefined,
+        latitude: this.cadastroForm.get('latitude')?.value || undefined,
+        longitude: this.cadastroForm.get('longitude')?.value || undefined
       };
 
-      this.usuarioService.criarUsuario(usuarioData).subscribe({
+      const senha = this.cadastroForm.get('senha')?.value;
+
+      this.usuarioService.criarUsuario(usuarioData, senha).subscribe({
         next: (usuario) => {
           this.loading = false;
           localStorage.setItem('usuarioId', usuario.id!);
+          localStorage.setItem('usuarioNome', usuario.nome);
           this.router.navigate(['/login']);
         },
         error: (error) => {
           this.loading = false;
           this.errorMessage = error.error?.message || 'Erro ao cadastrar. Tente novamente.';
+          console.error('Erro detalhado:', error);
         }
       });
     } else {
@@ -115,11 +151,6 @@ export class CadastroComponent implements OnInit {
         this.errorMessage = 'Você precisa aceitar os termos para continuar.';
       }
     }
-  }
-
-  calcularDataNascimento(idade: number): Date {
-    const hoje = new Date();
-    return new Date(hoje.getFullYear() - idade, hoje.getMonth(), hoje.getDate());
   }
 
   private markFormGroupTouched(formGroup: FormGroup): void {

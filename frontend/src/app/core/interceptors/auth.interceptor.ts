@@ -1,4 +1,3 @@
-// frontend/src/app/core/interceptors/auth.interceptor.ts
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -9,6 +8,7 @@ import { AuthService } from '../services/auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
+
   constructor(
     private tokenService: TokenService,
     private authService: AuthService,
@@ -16,24 +16,30 @@ export class AuthInterceptor implements HttpInterceptor {
   ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // Pular interceptor para requisições de autenticação
+    if (req.url.includes('/api/auth')) {
+      return next.handle(req);
+    }
+
     const token = this.tokenService.getToken();
 
     if (token) {
-      req = req.clone({
+      const cloned = req.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`
         }
       });
+      return next.handle(cloned).pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 401) {
+            this.authService.logout();
+            this.router.navigate(['/login']);
+          }
+          return throwError(() => error);
+        })
+      );
     }
 
-    return next.handle(req).pipe(
-      catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
-          this.authService.logout();
-          this.router.navigate(['/login']);
-        }
-        return throwError(() => error);
-      })
-    );
+    return next.handle(req);
   }
 }

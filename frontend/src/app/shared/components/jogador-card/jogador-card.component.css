@@ -1,0 +1,126 @@
+.jogador-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.jogador-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.card-content {
+  display: flex;
+  padding: 16px;
+  gap: 16px;
+  align-items: center;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.info h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.tags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+
+.tag.localizacao {
+  background: #e8f0fe;
+  color: #3f51b5;
+}
+
+.tag.afinidade {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.tag.afinidade.alta {
+  background: #c8e6c9;
+  color: #1b5e20;
+}
+
+.tag.afinidade.media {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.tag.afinidade.baixa {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.descricao {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: #f5f5f5;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background-color 0.2s;
+}
+
+.btn-icon:hover {
+  background: #e0e0e0;
+}
+
+.btn-conectar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+  white-space: nowrap;
+}
+
+.btn-conectar:hover {
+  transform: scale(1.05);
+}

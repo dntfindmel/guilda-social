@@ -1,49 +1,43 @@
 package com.guildasocial.domain.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.UuidGenerator;
-
 import java.util.UUID;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "preferencias_jogo")
 public class PreferenciaJogo {
 
     @Id
-    @GeneratedValue
-    @UuidGenerator
-    @Column(name = "id", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "perfil_id", nullable = false)
-    private PerfilJogador perfilJogador;
+    private PerfilJogador perfil;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "jogo_id", nullable = false)
     private Jogo jogo;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "nivel_interesse", nullable = false, length = 10)
-    private NivelInteresse nivelInteresse;
+    @Column(name = "nivel_interesse", length = 10)
+    private String nivelInteresse;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "nivel_experiencia", nullable = false, length = 15)
-    private NivelExperiencia nivelExperiencia;
+    @Column(name = "nivel_experiencia", length = 15)
+    private String nivelExperiencia;
 
-    public enum NivelInteresse {
-        BAIXO, MEDIO, ALTO
-    }
+    // Getters e Setters
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
-    public enum NivelExperiencia {
-        INICIANTE, INTERMEDIARIO, AVANCADO
-    }
+    public PerfilJogador getPerfil() { return perfil; }
+    public void setPerfil(PerfilJogador perfil) { this.perfil = perfil; }
+
+    public Jogo getJogo() { return jogo; }
+    public void setJogo(Jogo jogo) { this.jogo = jogo; }
+
+    public String getNivelInteresse() { return nivelInteresse; }
+    public void setNivelInteresse(String nivelInteresse) { this.nivelInteresse = nivelInteresse; }
+
+    public String getNivelExperiencia() { return nivelExperiencia; }
+    public void setNivelExperiencia(String nivelExperiencia) { this.nivelExperiencia = nivelExperiencia; }
 }

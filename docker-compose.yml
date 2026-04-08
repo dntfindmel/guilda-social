@@ -1,7 +1,9 @@
 version: '3.8'
 
 services:
+  # ============================================
   # PostgreSQL Database
+  # ============================================
   postgres:
     image: postgres:16-alpine
     container_name: guilda-postgres
@@ -27,7 +29,9 @@ services:
       - "com.guildasocial.service=postgres"
       - "com.guildasocial.version=1.0"
 
-  # Backend Spring Boot
+  # ============================================
+  # Backend - Spring Boot
+  # ============================================
   backend:
     build:
       context: ./backend
@@ -40,7 +44,7 @@ services:
       DB_NAME: guilda_social
       DB_USER: guilda_user
       DB_PASSWORD: guilda_pass
-      JWT_SECRET: ${JWT_SECRET:-guildaSocialSecretKey2024SuperSecureForJWTTokenGenerationWithAtLeast256Bits}
+      JWT_SECRET: ${JWT_SECRET:-guildaSocialSecretKey2024SuperSecureForJWTTokenGenerationWithAtLeast512Bits}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200,http://localhost,http://localhost:80}
     ports:
@@ -64,7 +68,9 @@ services:
       - "com.guildasocial.service=backend"
       - "com.guildasocial.version=1.0"
 
-  # Frontend Angular
+  # ============================================
+  # Frontend - Angular PWA
+  # ============================================
   frontend:
     build:
       context: ./frontend
@@ -74,6 +80,7 @@ services:
     container_name: guilda-frontend
     ports:
       - "80:80"
+      - "4200:4200"  # Para desenvolvimento
     depends_on:
       - backend
     networks:
@@ -89,7 +96,9 @@ services:
       - "com.guildasocial.service=frontend"
       - "com.guildasocial.version=1.0"
 
+  # ============================================
   # PgAdmin (Opcional - Interface do PostgreSQL)
+  # ============================================
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: guilda-pgadmin
@@ -110,6 +119,25 @@ services:
     labels:
       - "com.guildasocial.service=pgadmin"
       - "com.guildasocial.version=1.0"
+
+  # ============================================
+  # Adminer (Alternativa leve ao PgAdmin)
+  # ============================================
+  adminer:
+    image: adminer:latest
+    container_name: guilda-adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+    networks:
+      - guilda-network
+    restart: unless-stopped
+    profiles:
+      - dev
+      - with-adminer
 
 volumes:
   postgres_data:

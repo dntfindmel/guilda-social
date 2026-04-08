@@ -1,0 +1,69 @@
+<div class="detalhe-container">
+  <div class="detalhe-card" *ngIf="!loading && !errorMessage && jogador">
+    <!-- Botão Voltar -->
+    <button class="btn-back" (click)="voltar()">
+      ← Voltar
+    </button>
+
+    <!-- Avatar -->
+    <div class="avatar-section">
+      <div class="avatar-large" [style.backgroundColor]="'#6C63FF'">
+        {{ getInitials() }}
+      </div>
+    </div>
+
+    <!-- Nome e Localização -->
+    <div class="info-section">
+      <h1>{{ jogador.nome }}</h1>
+      <div class="localizacao">
+        📍 {{ jogador.cidade }}/{{ jogador.estado }}
+      </div>
+    </div>
+
+    <!-- Sobre -->
+    <div class="sobre-section" *ngIf="jogador.descricao">
+      <h2>Sobre</h2>
+      <p>{{ jogador.descricao }}</p>
+    </div>
+
+    <!-- Interesses -->
+    <div class="interesses-section">
+      <h2>Interesses</h2>
+      <div class="interesses-tags">
+        <span class="tag">🎲 Jogos de Tabuleiro</span>
+        <span class="tag">🃏 Jogos de Cartas</span>
+        <span class="tag">🐉 RPG</span>
+      </div>
+    </div>
+
+    <!-- Estilo de Jogo -->
+    <div class="estilo-section">
+      <h2>Estilo de Jogo</h2>
+      <div class="estilo-tag">
+        <span>{{ jogador.descricao || 'Casual' }}</span>
+      </div>
+    </div>
+
+    <!-- Botão Conectar -->
+    <button
+      class="btn-conectar"
+      (click)="enviarSolicitacao()"
+      [disabled]="enviandoSolicitacao">
+      <span *ngIf="!enviandoSolicitacao">💌 Conectar</span>
+      <span *ngIf="enviandoSolicitacao" class="loading-spinner"></span>
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Carregando perfil...</p>
+  </div>
+
+  <!-- Error -->
+  <div class="error-container" *ngIf="errorMessage && !loading">
+    <div class="error-icon">⚠️</div>
+    <p>{{ errorMessage }}</p>
+    <button class="btn-retry" (click)="voltar()">Voltar</button>
+  </div>
+</div>

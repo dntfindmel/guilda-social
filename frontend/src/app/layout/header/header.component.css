@@ -1,0 +1,50 @@
+.app-header {
+  background: #221E10;
+  border-bottom: 1px solid #1b1b11;
+  padding: 12px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo h1 {
+  font-size: 1.3rem;
+  color: #FEF9E6;
+  margin: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-name {
+  color: #64748B;
+  font-size: 0.9rem;
+}
+
+.btn-logout {
+  background: #221E10;
+  color: #F4C025;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 40px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  background: #F4C025;
+  color: #221E10;
+}
