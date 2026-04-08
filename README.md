@@ -366,7 +366,7 @@ Sprint 6	Semana 11-12	⏳ Pendente	Notificações, PWA completo
 ## 📄 Licença
 - Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
 
-##📞 Contato
+## 📞 Contato
 - Email: moyamelyssa@gmail.com
 
 GitHub: github.com/guilda-social
