@@ -3,11 +3,11 @@
     <div class="logo">
       <h1>Guilda Social</h1>
     </div>
-    <div class="user-info">
-      <span class="user-name">👤 {{ getUsuarioNome() }}</span>
-      <button class="btn-logout" (click)="logout()" title="Sair">
-        🚪 Sair
-      </button>
+    <div class="header-actions">
+      <div class="user-info">
+        <span class="btn-perfil" (click)="irParaPerfil()">👤 {{ getUsuarioNome() }}</span>
+        <button class="btn-logout" (click)="logout()">Sair</button>
+      </div>
     </div>
   </div>
 </header>

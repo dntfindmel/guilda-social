@@ -1,49 +1,58 @@
 package com.guildasocial.domain.service;
 
-import com.guildasocial.domain.model.PerfilJogador;
-import com.guildasocial.domain.model.PreferenciaJogo;
 import com.guildasocial.domain.model.Usuario;
+import com.guildasocial.domain.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class MatchmakingService {
 
+    private final UsuarioRepository usuarioRepository;
+
+    public MatchmakingService(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
+    }
+
+    /**
+     * Busca sugestões de jogadores para o usuário atual
+     * Exclui o próprio usuário e retorna todos os outros usuários ativos
+     */
+    public List<Usuario> getSugestoes(UUID usuarioId) {
+        // Buscar todos os usuários ativos, excluindo o usuário logado
+        List<Usuario> todosUsuarios = usuarioRepository.findAllAtivos();
+
+        // Filtrar para excluir o próprio usuário
+        return todosUsuarios.stream()
+                .filter(usuario -> !usuario.getId().equals(usuarioId))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Calcula afinidade entre dois usuários (simplificado para demonstração)
+     */
     public int calcularAfinidade(Usuario usuario1, Usuario usuario2) {
         int afinidade = 0;
-        int pesoTotal = 0;
 
-        // 1. Compatibilidade de jogos (peso 3)
-        pesoTotal += 3;
-        afinidade += calcularCompatibilidadeJogos(usuario1, usuario2) * 3;
-
-        // 2. Compatibilidade de estilo (peso 2)
-        pesoTotal += 2;
-        afinidade += calcularCompatibilidadeEstilo(usuario1, usuario2) * 2;
-
-        // 3. Compatibilidade de localização (peso 1)
-        pesoTotal += 1;
-        afinidade += calcularCompatibilidadeLocalizacao(usuario1, usuario2) * 1;
-
-        return pesoTotal > 0 ? afinidade / pesoTotal : 0;
-    }
-
-    private int calcularCompatibilidadeJogos(Usuario u1, Usuario u2) {
-        // Simulação: verificar se têm jogos em comum
-        // Aqui você implementaria a lógica real baseada nas preferências
-        return 70; // Percentual de compatibilidade
-    }
-
-    private int calcularCompatibilidadeEstilo(Usuario u1, Usuario u2) {
-        // Simulação: comparar estilos de jogo
-        return 65;
-    }
-
-    private int calcularCompatibilidadeLocalizacao(Usuario u1, Usuario u2) {
-        // Simulação: comparar proximidade geográfica
-        if (u1.getCidade() != null && u2.getCidade() != null &&
-            u1.getCidade().equalsIgnoreCase(u2.getCidade())) {
-            return 100;
+        // Mesma cidade = +50 pontos
+        if (usuario1.getCidade() != null && usuario2.getCidade() != null &&
+            usuario1.getCidade().equalsIgnoreCase(usuario2.getCidade())) {
+            afinidade += 50;
         }
-        return 50;
+
+        // Mesmo estado = +30 pontos
+        if (usuario1.getEstado() != null && usuario2.getEstado() != null &&
+            usuario1.getEstado().equalsIgnoreCase(usuario2.getEstado())) {
+            afinidade += 30;
+        }
+
+        // Mesmo estilo de jogo = +20 pontos (se tiver perfil)
+        // Aqui você pode adicionar mais lógica conforme o perfil do jogador
+
+        // Garantir que não ultrapasse 100
+        return Math.min(afinidade, 100);
     }
 }

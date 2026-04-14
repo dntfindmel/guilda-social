@@ -25,6 +25,7 @@ export class SugestoesComponent implements OnInit {
   animating = false;
 
   ngOnInit(): void {
+    console.log('SugestoesComponent iniciado');
     this.carregarSugestoes();
   }
 
@@ -32,20 +33,24 @@ export class SugestoesComponent implements OnInit {
     this.loading = true;
     const usuarioId = this.authService.getUsuarioId();
 
+    console.log('carregarSugestoes - usuarioId:', usuarioId);
+
     if (!usuarioId) {
+      console.log('Usuário não autenticado, redirecionando...');
       this.router.navigate(['/login']);
       return;
     }
 
     this.matchService.getSugestoes(usuarioId).subscribe({
       next: (data) => {
+        console.log('Sugestões recebidas:', data);
         this.sugestoes = data;
         this.currentIndex = 0;
         this.loading = false;
       },
       error: (error) => {
-        console.error('Erro:', error);
-        this.errorMessage = 'Erro ao carregar sugestões';
+        console.error('Erro ao carregar sugestões:', error);
+        this.errorMessage = 'Erro ao carregar sugestões. Tente novamente.';
         this.loading = false;
       }
     });
@@ -56,6 +61,19 @@ export class SugestoesComponent implements OnInit {
       return null;
     }
     return this.sugestoes[this.currentIndex];
+  }
+
+  // Métodos para gerar valores aleatórios
+  getNivelAleatorio(): number {
+    return Math.floor(Math.random() * 60) + 20;
+  }
+
+  getDistanciaAleatoria(): number {
+    return Math.floor(Math.random() * 10) + 1;
+  }
+
+  getIdadeAleatoria(): number {
+    return Math.floor(Math.random() * 10) + 20; // 20-30 anos
   }
 
   passar(): void {
@@ -90,21 +108,5 @@ export class SugestoesComponent implements OnInit {
 
   recarregar(): void {
     this.carregarSugestoes();
-  }
-
-  getNivelAleatorio(): number {
-    return Math.floor(Math.random() * 60) + 20;
-  }
-
-  getTags(jogador: Sugestao): string[] {
-    const tags = ['MMORPG', 'Voice Chat', 'Late Night'];
-    if (jogador.estiloJogo) {
-      tags.push(jogador.estiloJogo);
-    }
-    return tags.slice(0, 4);
-  }
-
-  getDistancia(): number {
-    return Math.floor(Math.random() * 10) + 1;
   }
 }

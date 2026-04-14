@@ -25,16 +25,24 @@ public class JwtTokenProvider {
     }
 
     public String generateToken(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        System.out.println("=== GERANDO TOKEN ===");
+        String email = authentication.getName();
+        System.out.println("Email: " + email);
+
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtConfig.getExpiration());
 
-        return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+        System.out.println("Expira em: " + expiryDate);
+
+        String token = Jwts.builder()
+                .setSubject(email)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
+
+        System.out.println("Token gerado: " + token.substring(0, 30) + "...");
+        return token;
     }
 
     public String getEmailFromToken(String token) {

@@ -1,14 +1,15 @@
 package com.guildasocial.api.controller;
 
 import com.guildasocial.api.dto.request.MatchRequestDTO;
-import com.guildasocial.api.dto.response.SugestaoResponseDTO;
 import com.guildasocial.api.dto.response.MatchResponseDTO;
+import com.guildasocial.api.dto.response.SugestaoResponseDTO;
 import com.guildasocial.domain.model.Match;
 import com.guildasocial.domain.model.Usuario;
 import com.guildasocial.domain.service.MatchService;
 import com.guildasocial.domain.service.MatchmakingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,24 +28,27 @@ public class MatchController {
 
     @GetMapping("/sugestoes/{usuarioId}")
     public ResponseEntity<List<SugestaoResponseDTO>> getSugestoes(@PathVariable UUID usuarioId) {
+        System.out.println("=== GET /matches/sugestoes/" + usuarioId + " ===");
+
         List<Usuario> sugestoes = matchService.getSugestoes(usuarioId);
+        Usuario usuarioAtual = matchService.getUsuarioById(usuarioId);
 
         List<SugestaoResponseDTO> response = sugestoes.stream()
             .map(usuario -> {
-                int afinidade = matchmakingService.calcularAfinidade(
-                    matchService.getUsuarioById(usuarioId), usuario);
-                return new SugestaoResponseDTO(
-                    usuario.getId(),
-                    usuario.getNome(),
-                    usuario.getCidade(),
-                    usuario.getEstado(),
-                    usuario.getDescricao(),
-                    usuario.getDescricao(),
-                    usuario.getFotoPerfil(),
-                    afinidade
-                );
+                int afinidade = matchmakingService.calcularAfinidade(usuarioAtual, usuario);
+                SugestaoResponseDTO dto = new SugestaoResponseDTO();
+                dto.setId(usuario.getId());
+                dto.setNome(usuario.getNome());
+                dto.setCidade(usuario.getCidade());
+                dto.setEstado(usuario.getEstado());
+                dto.setDescricao(usuario.getDescricao());
+                dto.setFotoPerfil(usuario.getFotoPerfil());
+                dto.setNivelAfinidade(afinidade);
+                return dto;
             })
             .collect(Collectors.toList());
+
+        System.out.println("Retornando " + response.size() + " sugestões");
 
         return ResponseEntity.ok(response);
     }

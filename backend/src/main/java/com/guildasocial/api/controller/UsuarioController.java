@@ -9,11 +9,14 @@ import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -21,64 +24,58 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
     private final ModelMapper modelMapper;
+    private final String UPLOAD_DIR = "uploads/";
 
-    // Construtor explícito
     public UsuarioController(UsuarioService usuarioService, ModelMapper modelMapper) {
         this.usuarioService = usuarioService;
         this.modelMapper = modelMapper;
+        // Criar diretório se não existir
+        try {
+            Files.createDirectories(Paths.get(UPLOAD_DIR));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @PostMapping
     @Operation(summary = "Criar novo usuário")
     public ResponseEntity<UsuarioResponseDTO> criarUsuario(@Valid @RequestBody CadastroRequestDTO request) {
         Usuario usuario = modelMapper.map(request, Usuario.class);
+
+        if (request.getFotoPerfil() != null && !request.getFotoPerfil().isEmpty()) {
+            String fotoUrl = salvarFotoBase64(request.getFotoPerfil(), null);
+            usuario.setFotoPerfil(fotoUrl);
+        }
+
         Usuario usuarioCriado = usuarioService.criarUsuario(usuario, request.getSenha());
-        
+
         UsuarioResponseDTO response = modelMapper.map(usuarioCriado, UsuarioResponseDTO.class);
-        
+
         return ResponseEntity
             .created(URI.create("/api/usuarios/" + usuarioCriado.getId()))
             .body(response);
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Buscar usuário por ID")
-    public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable UUID id) {
-        Usuario usuario = usuarioService.buscarPorId(id);
-        UsuarioResponseDTO response = modelMapper.map(usuario, UsuarioResponseDTO.class);
-        return ResponseEntity.ok(response);
-    }
+    private String salvarFotoBase64(String base64, UUID usuarioId) {
+        try {
+            // Remover prefixo se existir (data:image/png;base64,)
+            String base64Data = base64;
+            if (base64.contains(",")) {
+                base64Data = base64.split(",")[1];
+            }
 
-    @GetMapping
-    @Operation(summary = "Listar todos os usuários ativos")
-    public ResponseEntity<List<UsuarioResponseDTO>> listarTodos(@RequestParam(required = false) UUID usuarioId) {
-        List<Usuario> usuarios = usuarioService.listarTodos(usuarioId);
-        
-        List<UsuarioResponseDTO> response = usuarios.stream()
-            .map(usuario -> modelMapper.map(usuario, UsuarioResponseDTO.class))
-            .collect(Collectors.toList());
-            
-        return ResponseEntity.ok(response);
-    }
+            byte[] imageBytes = java.util.Base64.getDecoder().decode(base64Data);
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Atualizar usuário")
-    public ResponseEntity<UsuarioResponseDTO> atualizarUsuario(
-            @PathVariable UUID id,
-            @Valid @RequestBody CadastroRequestDTO request) {
-        
-        Usuario usuarioAtualizado = modelMapper.map(request, Usuario.class);
-        Usuario usuario = usuarioService.atualizarUsuario(id, usuarioAtualizado);
-        
-        UsuarioResponseDTO response = modelMapper.map(usuario, UsuarioResponseDTO.class);
-        
-        return ResponseEntity.ok(response);
-    }
+            String fileName = (usuarioId != null ? usuarioId.toString() : UUID.randomUUID().toString()) + "_" + System.currentTimeMillis() + ".jpg";
+            Path filePath = Paths.get(UPLOAD_DIR + fileName);
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Desativar usuário")
-    public ResponseEntity<Void> deletarUsuario(@PathVariable UUID id) {
-        usuarioService.deletarUsuario(id);
-        return ResponseEntity.noContent().build();
+            Files.write(filePath, imageBytes);
+
+            return "/uploads/" + fileName;
+
+        } catch (Exception e) {
+            System.err.println("Erro ao salvar foto: " + e.getMessage());
+            return null;
+        }
     }
 }

@@ -32,20 +32,18 @@ export const routes: Routes = [
       .then(m => m.DetalheJogadorComponent),
     canActivate: [AuthGuard]
   },
-
-  // Rotas para próximas sprints (comentadas por enquanto)
-  // {
-  //   path: 'perfil',
-  //   loadComponent: () => import('./features/perfil/visualizar-perfil/visualizar-perfil.component')
-  //     .then(m => m.VisualizarPerfilComponent),
-  //   canActivate: [AuthGuard]
-  // },
-  // {
-  //   path: 'perfil/editar',
-  //   loadComponent: () => import('./features/perfil/editar-perfil/editar-perfil.component')
-  //     .then(m => m.EditarPerfilComponent),
-  //   canActivate: [AuthGuard]
-  // },
+  {
+     path: 'perfil',
+     loadComponent: () => import('./features/perfil/visualizar-perfil/visualizar-perfil.component')
+       .then(m => m.VisualizarPerfilComponent),
+     canActivate: [AuthGuard]
+   },
+   {
+     path: 'perfil/editar',
+     loadComponent: () => import('./features/perfil/editar-perfil/editar-perfil.component')
+       .then(m => m.EditarPerfilComponent),
+     canActivate: [AuthGuard]
+   },
   // {
   //   path: 'grupos',
   //   loadComponent: () => import('./features/grupos/listar-grupos/listar-grupos.component')

@@ -2,7 +2,7 @@ import { Component, OnInit, inject, ElementRef, ViewChild } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UsuarioService, CriarUsuarioDTO } from '../../../core/services/usuario.service';
+import { UsuarioService } from '../../../core/services/usuario.service';
 
 @Component({
   selector: 'app-cadastro',
@@ -22,6 +22,7 @@ export class CadastroComponent implements OnInit {
   loading = false;
   errorMessage = '';
   fotoPreview: string | undefined;
+  fotoBase64: string | undefined;
 
   estados = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
 
@@ -80,7 +81,7 @@ export class CadastroComponent implements OnInit {
           });
         },
         (error) => {
-          console.log('Localização não permitida pelo usuário');
+          console.log('Localização não permitida');
         }
       );
     }
@@ -97,6 +98,8 @@ export class CadastroComponent implements OnInit {
       const reader = new FileReader();
       reader.onload = (e) => {
         this.fotoPreview = e.target?.result as string;
+        // Salvar a imagem em base64 para enviar ao backend
+        this.fotoBase64 = this.fotoPreview;
       };
       reader.readAsDataURL(file);
     }
@@ -107,26 +110,23 @@ export class CadastroComponent implements OnInit {
       this.loading = true;
       this.errorMessage = '';
 
-      // Coletar interesses (convertendo null para undefined)
       const interesses: string[] = [];
       if (this.cadastroForm.get('interesseTabuleiro')?.value) interesses.push('TABULEIRO');
       if (this.cadastroForm.get('interesseCartas')?.value) interesses.push('CARD_GAME');
       if (this.cadastroForm.get('interesseRPG')?.value) interesses.push('RPG_MESA');
 
-      // Construir objeto do tipo CriarUsuarioDTO
-      const usuarioData: CriarUsuarioDTO = {
+      const usuarioData: any = {
         nome: this.cadastroForm.get('nome')?.value,
         email: this.cadastroForm.get('email')?.value,
         dataNascimento: this.cadastroForm.get('dataNascimento')?.value,
         cidade: this.cadastroForm.get('cidade')?.value,
         estado: this.cadastroForm.get('estado')?.value,
-        // Campos opcionais: usar undefined em vez de null
         telefone: this.cadastroForm.get('telefone')?.value || undefined,
         descricao: this.cadastroForm.get('descricao')?.value || undefined,
         interesses: interesses.length > 0 ? interesses : undefined,
-        fotoPerfil: this.fotoPreview || undefined,
         latitude: this.cadastroForm.get('latitude')?.value || undefined,
-        longitude: this.cadastroForm.get('longitude')?.value || undefined
+        longitude: this.cadastroForm.get('longitude')?.value || undefined,
+        fotoPerfil: this.fotoBase64 || undefined  // ← Enviar foto em base64
       };
 
       const senha = this.cadastroForm.get('senha')?.value;

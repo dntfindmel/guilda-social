@@ -27,48 +27,60 @@ public class AuthService {
         this.usuarioRepository = usuarioRepository;
     }
 
-// AuthService.java - método autenticar
+    public LoginResponseDTO autenticar(LoginRequestDTO request) {
+        System.out.println("=== INICIANDO LOGIN ===");
+        System.out.println("Email: " + request.getEmail());
+        System.out.println("Senha: " + request.getSenha());
 
-  public LoginResponseDTO autenticar(LoginRequestDTO request) {
-      System.out.println("=========================================");
-      System.out.println("=== INICIANDO LOGIN ===");
-      System.out.println("Email recebido: [" + request.getEmail() + "]");
-      System.out.println("Senha recebida: [" + request.getSenha() + "]");
-      
-      // Buscar usuário
-      Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
-              .orElse(null);
-      
-      if (usuario == null) {
-          System.out.println("❌ Usuário NÃO encontrado para o email: " + request.getEmail());
-          throw new BusinessException("E-mail ou senha inválidos");
-      }
-      
-      System.out.println("✅ Usuário encontrado:");
-      System.out.println("   ID: " + usuario.getId());
-      System.out.println("   Email: " + usuario.getEmail());
-      System.out.println("   Senha no banco: [" + usuario.getSenha() + "]");
-      
-      // Comparar senhas
-      if (!usuario.getSenha().equals(request.getSenha())) {
-          System.out.println("❌ Senha NÃO confere!");
-          System.out.println("   Senha informada: [" + request.getSenha() + "]");
-          System.out.println("   Senha no banco: [" + usuario.getSenha() + "]");
-          throw new BusinessException("E-mail ou senha inválidos");
-      }
-      
-      System.out.println("✅ Senha confere!");
-      System.out.println("=========================================");
-      
-      // Gerar token
-      Authentication authentication = authenticationManager.authenticate(
-              new UsernamePasswordAuthenticationToken(request.getEmail(), request.getSenha())
-      );
-      
-      SecurityContextHolder.getContext().setAuthentication(authentication);
-      String token = tokenProvider.generateToken(authentication);
-      
-      return new LoginResponseDTO(token, usuario.getId(), usuario.getNome(), usuario.getEmail());
-  }
-    
+        try {
+            // 1. Verificar se o usuário existe no banco
+            Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
+                    .orElse(null);
+
+            if (usuario == null) {
+                System.out.println("❌ Usuário NÃO encontrado: " + request.getEmail());
+                throw new BusinessException("E-mail ou senha inválidos");
+            }
+
+            System.out.println("✅ Usuário encontrado: " + usuario.getEmail());
+            System.out.println("Senha no banco: " + usuario.getSenha());
+            System.out.println("Senha informada: " + request.getSenha());
+
+            // 2. Comparar senha diretamente (sem criptografia)
+            if (!usuario.getSenha().equals(request.getSenha())) {
+                System.out.println("❌ Senha não confere!");
+                throw new BusinessException("E-mail ou senha inválidos");
+            }
+
+            System.out.println("✅ Senha confere!");
+
+            // 3. Gerar autenticação manual
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                usuario.getEmail(),
+                usuario.getSenha()
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // 4. Gerar token JWT
+            String token = tokenProvider.generateToken(authentication);
+            System.out.println("✅ Token gerado: " + token.substring(0, 30) + "...");
+
+            // 5. Retornar resposta
+            LoginResponseDTO response = new LoginResponseDTO();
+            response.setToken(token);
+            response.setType("Bearer");
+            response.setUsuarioId(usuario.getId());
+            response.setNome(usuario.getNome());
+            response.setEmail(usuario.getEmail());
+
+            System.out.println("=== LOGIN BEM-SUCEDIDO ===");
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("❌ Erro no login: " + e.getMessage());
+            e.printStackTrace();
+            throw new BusinessException("E-mail ou senha inválidos");
+        }
+    }
 }

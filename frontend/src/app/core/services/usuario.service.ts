@@ -9,12 +9,12 @@ export interface CriarUsuarioDTO {
   dataNascimento: Date;
   cidade: string;
   estado: string;
-  telefone?: string;        // opcional
-  descricao?: string;       // opcional
-  interesses?: string[];    // opcional
-  fotoPerfil?: string;      // opcional
-  latitude?: number;        // opcional
-  longitude?: number;       // opcional
+  telefone?: string;
+  descricao?: string;
+  interesses?: string[];
+  latitude?: number;
+  longitude?: number;
+  fotoPerfil?: string;  // ← Adicionar foto
 }
 
 @Injectable({

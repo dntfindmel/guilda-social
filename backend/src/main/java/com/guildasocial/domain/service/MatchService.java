@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,33 +29,22 @@ public class MatchService {
 
     @Transactional(readOnly = true)
     public List<Usuario> getSugestoes(UUID usuarioId) {
-        Usuario usuarioAtual = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
+        System.out.println("=== MatchService.getSugestoes ===");
+        System.out.println("Usuário ID: " + usuarioId);
 
-        List<Usuario> todosUsuarios = usuarioRepository.findAllAtivos(usuarioId);
-        List<Usuario> sugestoes = new ArrayList<>();
+        List<Usuario> sugestoes = matchmakingService.getSugestoes(usuarioId);
 
-        for (Usuario usuario : todosUsuarios) {
-            // Não sugerir a si mesmo
-            if (usuario.getId().equals(usuarioId)) continue;
-
-            // Não sugerir usuários já conectados
-            if (matchRepository.existsByUsuario1AndUsuario2(usuarioAtual, usuario)) continue;
-
-            int afinidade = matchmakingService.calcularAfinidade(usuarioAtual, usuario);
-            if (afinidade >= 50) { // Só sugerir se afinidade >= 50%
-                sugestoes.add(usuario);
-            }
+        System.out.println("Total de sugestões encontradas: " + sugestoes.size());
+        for (Usuario u : sugestoes) {
+            System.out.println("  - " + u.getNome() + " (" + u.getEmail() + ")");
         }
 
-        // Ordenar por afinidade (maior primeiro)
-        sugestoes.sort((u1, u2) -> {
-            int afinidade1 = matchmakingService.calcularAfinidade(usuarioAtual, u1);
-            int afinidade2 = matchmakingService.calcularAfinidade(usuarioAtual, u2);
-            return Integer.compare(afinidade2, afinidade1);
-        });
-
         return sugestoes;
+    }
+
+    public Usuario getUsuarioById(UUID id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
     }
 
     @Transactional
@@ -77,6 +65,9 @@ public class MatchService {
         match.setUsuario2(alvo);
         match.setNivelAfinidade(afinidade);
         match.setStatus("PENDENTE");
+        match.setDataMatch(LocalDateTime.now());
+
+        System.out.println("Solicitação enviada: " + usuario.getNome() + " -> " + alvo.getNome());
 
         return matchRepository.save(match);
     }
@@ -98,10 +89,5 @@ public class MatchService {
                 .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
 
         return matchRepository.findMatchesByUsuario(usuario, "ACEITO");
-    }
-
-    public Usuario getUsuarioById(UUID id) {
-    return usuarioRepository.findById(id)
-        .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
     }
 }
