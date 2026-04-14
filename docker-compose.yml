@@ -80,7 +80,7 @@ services:
     container_name: guilda-frontend
     ports:
       - "80:80"
-      - "4200:4200"  # Para desenvolvimento
+      - "4200:4200"
     depends_on:
       - backend
     networks:
@@ -97,7 +97,7 @@ services:
       - "com.guildasocial.version=1.0"
 
   # ============================================
-  # PgAdmin (Opcional - Interface do PostgreSQL)
+  # PgAdmin (Opcional)
   # ============================================
   pgadmin:
     image: dpage/pgadmin4:latest

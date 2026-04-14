@@ -31,8 +31,9 @@ USER spring:spring
 
 WORKDIR /app
 
-# Criar pasta para logs
+# Criar pasta para logs e uploads
 RUN mkdir -p /app/logs
+RUN mkdir -p /app/uploads
 
 # Copiar JAR do estágio de build
 COPY --from=build /app/target/*.jar app.jar
