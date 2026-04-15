@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { PerfilService } from '../../../core/services/perfil.service';
 import { HeaderComponent } from '../../../layout/header/header.component';
@@ -16,6 +17,7 @@ import { HeaderComponent } from '../../../layout/header/header.component';
 export class EditarPerfilComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private http = inject(HttpClient);
   private authService = inject(AuthService);
   private perfilService = inject(PerfilService);
 
@@ -59,7 +61,7 @@ export class EditarPerfilComponent implements OnInit {
           estado: data.estado,
           descricao: data.descricao || ''
         });
-        if (data.fotoPerfil) {
+        if (data.fotoPerfil && !data.fotoPerfil.startsWith('data:')) {
           this.fotoPreview = `http://localhost:8080${data.fotoPerfil}`;
         }
         this.loading = false;
@@ -89,7 +91,13 @@ export class EditarPerfilComponent implements OnInit {
     const usuarioId = this.authService.getUsuarioId();
     if (!usuarioId || !this.fotoFile) return;
 
-    this.perfilService.uploadFoto(usuarioId, this.fotoFile).subscribe({
+    const formData = new FormData();
+    formData.append('file', this.fotoFile);
+
+    this.http.post<{ fotoUrl: string; message: string }>(
+      `http://localhost:8080/api/upload/foto/${usuarioId}`,
+      formData
+    ).subscribe({
       next: (response) => {
         this.successMessage = response.message;
         this.fotoPreview = `http://localhost:8080${response.fotoUrl}`;
@@ -107,11 +115,11 @@ export class EditarPerfilComponent implements OnInit {
     const usuarioId = this.authService.getUsuarioId();
     if (!usuarioId) return;
 
-    this.perfilService.removerFoto(usuarioId).subscribe({
-      next: () => {
+    this.http.delete<{ message: string }>(`http://localhost:8080/api/upload/foto/${usuarioId}`).subscribe({
+      next: (response) => {
         this.fotoPreview = undefined;
         this.fotoFile = null;
-        this.successMessage = 'Foto removida com sucesso!';
+        this.successMessage = response.message;
         setTimeout(() => { this.successMessage = ''; }, 3000);
       },
       error: (error) => {
@@ -150,18 +158,19 @@ export class EditarPerfilComponent implements OnInit {
       const descricao = this.perfilForm.get('descricao')?.value;
       if (descricao) dados.descricao = descricao;
 
+      // Primeiro salva os dados do perfil
       this.perfilService.atualizarPerfil(usuarioId, dados).subscribe({
         next: () => {
+          // Depois, se tiver foto, faz upload
+          if (this.fotoFile) {
+            this.uploadFoto();
+          }
+
           this.saving = false;
           this.successMessage = 'Perfil atualizado com sucesso!';
 
           if (dados.nome) {
             localStorage.setItem('usuarioNome', dados.nome);
-          }
-
-          // Se tiver foto para upload, faz depois
-          if (this.fotoFile) {
-            this.uploadFoto();
           }
 
           setTimeout(() => {

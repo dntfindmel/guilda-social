@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ElementRef, ViewChild } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { UsuarioService } from '../../../core/services/usuario.service';
 
 @Component({
@@ -14,6 +15,7 @@ import { UsuarioService } from '../../../core/services/usuario.service';
 export class CadastroComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private http = inject(HttpClient);
   private usuarioService = inject(UsuarioService);
 
   @ViewChild('fotoInput') fotoInput!: ElementRef<HTMLInputElement>;
@@ -22,7 +24,8 @@ export class CadastroComponent implements OnInit {
   loading = false;
   errorMessage = '';
   fotoPreview: string | undefined;
-  fotoBase64: string | undefined;
+  fotoFile: File | null = null;
+  usuarioIdTemp: string | null = null;
 
   estados = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
 
@@ -94,15 +97,30 @@ export class CadastroComponent implements OnInit {
   onFotoSelecionada(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      const file = input.files[0];
+      this.fotoFile = input.files[0];
       const reader = new FileReader();
       reader.onload = (e) => {
         this.fotoPreview = e.target?.result as string;
-        // Salvar a imagem em base64 para enviar ao backend
-        this.fotoBase64 = this.fotoPreview;
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(this.fotoFile);
     }
+  }
+
+  uploadFoto(usuarioId: string): void {
+    if (!this.fotoFile) return;
+
+    const formData = new FormData();
+    formData.append('file', this.fotoFile);
+
+    this.http.post<{ fotoUrl: string }>(`http://localhost:8080/api/upload/foto/${usuarioId}`, formData)
+      .subscribe({
+        next: () => {
+          console.log('Foto enviada com sucesso');
+        },
+        error: (error) => {
+          console.error('Erro ao enviar foto:', error);
+        }
+      });
   }
 
   cadastrar(): void {
@@ -125,14 +143,18 @@ export class CadastroComponent implements OnInit {
         descricao: this.cadastroForm.get('descricao')?.value || undefined,
         interesses: interesses.length > 0 ? interesses : undefined,
         latitude: this.cadastroForm.get('latitude')?.value || undefined,
-        longitude: this.cadastroForm.get('longitude')?.value || undefined,
-        fotoPerfil: this.fotoBase64 || undefined  // ← Enviar foto em base64
+        longitude: this.cadastroForm.get('longitude')?.value || undefined
       };
 
       const senha = this.cadastroForm.get('senha')?.value;
 
       this.usuarioService.criarUsuario(usuarioData, senha).subscribe({
         next: (usuario) => {
+          // Se tiver foto, faz upload
+          if (this.fotoFile && usuario.id) {
+            this.uploadFoto(usuario.id);
+          }
+
           this.loading = false;
           localStorage.setItem('usuarioId', usuario.id!);
           localStorage.setItem('usuarioNome', usuario.nome);
@@ -141,7 +163,6 @@ export class CadastroComponent implements OnInit {
         error: (error) => {
           this.loading = false;
           this.errorMessage = error.error?.message || 'Erro ao cadastrar. Tente novamente.';
-          console.error('Erro detalhado:', error);
         }
       });
     } else {

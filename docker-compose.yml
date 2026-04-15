@@ -1,22 +1,16 @@
-version: '3.8'
-
 services:
-  # ============================================
-  # PostgreSQL Database
-  # ============================================
   postgres:
     image: postgres:16-alpine
+    restart: unless-stopped
     container_name: guilda-postgres
     environment:
       POSTGRES_DB: guilda_social
       POSTGRES_USER: guilda_user
       POSTGRES_PASSWORD: guilda_pass
-      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database/init:/docker-entrypoint-initdb.d
     networks:
       - guilda-network
     healthcheck:
@@ -24,29 +18,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
-    labels:
-      - "com.guildasocial.service=postgres"
-      - "com.guildasocial.version=1.0"
 
-  # ============================================
-  # Backend - Spring Boot
-  # ============================================
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: dntfindmel/guilda-social-backend:1.0.0
+    restart: unless-stopped
     container_name: guilda-backend
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: guilda_social
-      DB_USER: guilda_user
-      DB_PASSWORD: guilda_pass
-      JWT_SECRET: ${JWT_SECRET:-guildaSocialSecretKey2024SuperSecureForJWTTokenGenerationWithAtLeast512Bits}
-      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200,http://localhost,http://localhost:80}
     ports:
       - "8080:8080"
     depends_on:
@@ -54,98 +30,27 @@ services:
         condition: service_healthy
     networks:
       - guilda-network
-    volumes:
-      - uploads:/app/uploads
-      - ./backend/logs:/app/logs
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    labels:
-      - "com.guildasocial.service=backend"
-      - "com.guildasocial.version=1.0"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=guilda_social
+      - DB_USER=guilda_user
+      - DB_PASSWORD=guilda_pass
 
-  # ============================================
-  # Frontend - Angular PWA
-  # ============================================
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        API_URL: ${API_URL:-http://localhost:8080}
+    image: dntfindmel/guilda-social-frontend:1.0.0
+    restart: unless-stopped
     container_name: guilda-frontend
     ports:
-      - "80:80"
-      - "4200:4200"
+      - "3030:80"
     depends_on:
       - backend
     networks:
       - guilda-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-    labels:
-      - "com.guildasocial.service=frontend"
-      - "com.guildasocial.version=1.0"
-
-  # ============================================
-  # PgAdmin (Opcional)
-  # ============================================
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: guilda-pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@admin.com}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    ports:
-      - "5050:80"
-    depends_on:
-      - postgres
-    networks:
-      - guilda-network
-    restart: unless-stopped
-    profiles:
-      - dev
-      - with-pgadmin
-    labels:
-      - "com.guildasocial.service=pgadmin"
-      - "com.guildasocial.version=1.0"
-
-  # ============================================
-  # Adminer (Alternativa leve ao PgAdmin)
-  # ============================================
-  adminer:
-    image: adminer:latest
-    container_name: guilda-adminer
-    environment:
-      ADMINER_DEFAULT_SERVER: postgres
-    ports:
-      - "8081:8080"
-    depends_on:
-      - postgres
-    networks:
-      - guilda-network
-    restart: unless-stopped
-    profiles:
-      - dev
-      - with-adminer
 
 volumes:
   postgres_data:
-    name: guilda_postgres_data
-  uploads:
-    name: guilda_uploads
 
 networks:
   guilda-network:
-    name: guilda_network
     driver: bridge

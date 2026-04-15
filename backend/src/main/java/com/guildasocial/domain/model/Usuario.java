@@ -11,55 +11,55 @@ import java.util.UUID;
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
-    
+
     @Id
     @GeneratedValue
     @UuidGenerator
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
-    
+
     @Column(nullable = false, length = 100)
     private String nome;
-    
+
     @Column(nullable = false, unique = true, length = 100)
     private String email;
-    
+
     @Column(nullable = false)
     private String senha;
-    
+
     @Temporal(TemporalType.DATE)
     @Column(name = "data_nascimento")
     private Date dataNascimento;
-    
+
     @Column(length = 20)
     private String telefone;
-    
+
     @Column(nullable = false, length = 100)
     private String cidade;
-    
+
     @Column(nullable = false, length = 2)
     private String estado;
-    
+
     // CORRIGIDO: remover precision e scale
     @Column
     private Double latitude;
-    
+
     @Column
     private Double longitude;
-    
+
     @Column(columnDefinition = "TEXT")
     private String descricao;
-    
-    @Column(name = "foto_perfil")
+
+    @Column(columnDefinition = "TEXT")
     private String fotoPerfil;
-    
+
     @CreationTimestamp
     @Column(name = "data_cadastro", updatable = false)
     private LocalDateTime dataCadastro;
-    
+
     @Column(nullable = false)
     private Boolean ativo = true;
-    
+
     @Column(name = "ultimo_login")
     private LocalDateTime ultimoLogin;
 
