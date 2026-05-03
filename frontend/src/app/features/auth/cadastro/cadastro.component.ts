@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractContro
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { UsuarioService } from '../../../core/services/usuario.service';
+import { GeolocationService } from '../../../core/services/geolocation.service';
 
 @Component({
   selector: 'app-cadastro',
@@ -17,6 +18,7 @@ export class CadastroComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
   private usuarioService = inject(UsuarioService);
+  private geolocationService = inject(GeolocationService);  // ADICIONADO
 
   @ViewChild('fotoInput') fotoInput!: ElementRef<HTMLInputElement>;
 
@@ -36,7 +38,7 @@ export class CadastroComponent implements OnInit {
       senha: ['', [Validators.required, Validators.minLength(6)]],
       confirmarSenha: ['', Validators.required],
       dataNascimento: ['', [Validators.required, this.validarIdade]],
-      telefone: ['', [Validators.pattern(/^\(?[1-9]{2}\)? ?(?:[2-8]|9[1-9])[0-9]{3}-?[0-9]{4}$/)]],
+      telefone: ['', [Validators.pattern(/^[0-9]{10,11}$/)]],
       cidade: ['', Validators.required],
       estado: ['', Validators.required],
       descricao: ['', [Validators.maxLength(500)]],
@@ -51,6 +53,22 @@ export class CadastroComponent implements OnInit {
 
   ngOnInit(): void {
     this.obterLocalizacao();
+  }
+
+  obterLocalizacao(): void {
+    this.geolocationService.getCurrentPosition().subscribe({
+      next: (location) => {
+        this.cadastroForm.patchValue({
+          latitude: location.lat,
+          longitude: location.lng,
+          cidade: location.cidade,
+          estado: location.estado
+        });
+      },
+      error: (error) => {
+        console.log('Localização não disponível:', error);
+      }
+    });
   }
 
   checkSenhas(group: FormGroup): ValidationErrors | null {
@@ -72,22 +90,6 @@ export class CadastroComponent implements OnInit {
     }
 
     return idade >= 13 ? null : { menorIdade: true };
-  }
-
-  obterLocalizacao(): void {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          this.cadastroForm.patchValue({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-          });
-        },
-        (error) => {
-          console.log('Localização não permitida');
-        }
-      );
-    }
   }
 
   selecionarFoto(): void {
@@ -150,7 +152,6 @@ export class CadastroComponent implements OnInit {
 
       this.usuarioService.criarUsuario(usuarioData, senha).subscribe({
         next: (usuario) => {
-          // Se tiver foto, faz upload
           if (this.fotoFile && usuario.id) {
             this.uploadFoto(usuario.id);
           }

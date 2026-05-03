@@ -1,8 +1,9 @@
 <div class="jogador-card">
   <div class="card-content">
-    <!-- Avatar -->
-    <div class="avatar" [style.backgroundColor]="'#6C63FF'">
-      {{ getInitials() }}
+    <!-- Avatar com foto -->
+    <div class="avatar">
+      <img *ngIf="jogador.fotoPerfil" [src]="getFotoUrl()" alt="Foto de perfil">
+      <div *ngIf="!jogador.fotoPerfil" class="avatar-initials">{{ getInitials() }}</div>
     </div>
 
     <!-- Informações -->
@@ -14,12 +15,12 @@
           📍 {{ jogador.cidade }}/{{ jogador.estado }}
         </span>
         <span class="tag afinidade {{ getAfinidadeClass() }}">
-          🎯 {{ jogador.nivelAfinidade }}% match
+          🎯 {{ nivelAfinidade }}% match
         </span>
       </div>
 
       <p class="descricao" *ngIf="jogador.descricao">
-        {{ jogador.descricao | slice:0:100 }}...
+        {{ jogador.descricao | slice:0:80 }}...
       </p>
     </div>
 

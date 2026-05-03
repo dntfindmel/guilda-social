@@ -24,8 +24,12 @@ export class SugestoesComponent implements OnInit {
   errorMessage = '';
   animating = false;
 
+  niveis: Map<string, number> = new Map();
+  distancias: Map<string, number> = new Map();
+  idades: Map<string, number> = new Map();
+  tagsList: Map<string, string[]> = new Map();
+
   ngOnInit(): void {
-    console.log('SugestoesComponent iniciado');
     this.carregarSugestoes();
   }
 
@@ -33,24 +37,27 @@ export class SugestoesComponent implements OnInit {
     this.loading = true;
     const usuarioId = this.authService.getUsuarioId();
 
-    console.log('carregarSugestoes - usuarioId:', usuarioId);
-
     if (!usuarioId) {
-      console.log('Usuário não autenticado, redirecionando...');
       this.router.navigate(['/login']);
       return;
     }
 
     this.matchService.getSugestoes(usuarioId).subscribe({
       next: (data) => {
-        console.log('Sugestões recebidas:', data);
         this.sugestoes = data;
         this.currentIndex = 0;
+        // Calcular valores aleatórios uma única vez para cada jogador
+        this.sugestoes.forEach(jogador => {
+          this.niveis.set(jogador.id, Math.floor(Math.random() * 60) + 20);
+          this.distancias.set(jogador.id, Math.floor(Math.random() * 10) + 1);
+          this.idades.set(jogador.id, Math.floor(Math.random() * 10) + 20);
+          this.tagsList.set(jogador.id, ['MMORPG', 'Voice Chat', 'Late Night']);
+        });
         this.loading = false;
       },
       error: (error) => {
-        console.error('Erro ao carregar sugestões:', error);
-        this.errorMessage = 'Erro ao carregar sugestões. Tente novamente.';
+        console.error('Erro:', error);
+        this.errorMessage = 'Erro ao carregar sugestões';
         this.loading = false;
       }
     });
@@ -63,17 +70,42 @@ export class SugestoesComponent implements OnInit {
     return this.sugestoes[this.currentIndex];
   }
 
-  // Métodos para gerar valores aleatórios
-  getNivelAleatorio(): number {
+  // Método para obter a URL da foto - COM VERIFICAÇÃO DE NULL
+  getFotoUrl(jogador: Sugestao | null): string {
+    if (!jogador || !jogador.fotoPerfil) return '';
+    if (jogador.fotoPerfil.startsWith('http')) {
+      return jogador.fotoPerfil;
+    }
+    return `http://localhost:8080${jogador.fotoPerfil}`;
+  }
+
+  getNivelAleatorio(jogadorId?: string): number {
+    if (jogadorId && this.niveis.has(jogadorId)) {
+      return this.niveis.get(jogadorId)!;
+    }
     return Math.floor(Math.random() * 60) + 20;
   }
 
-  getDistanciaAleatoria(): number {
+  getDistanciaAleatoria(jogadorId?: string): number {
+    if (jogadorId && this.distancias.has(jogadorId)) {
+      return this.distancias.get(jogadorId)!;
+    }
     return Math.floor(Math.random() * 10) + 1;
   }
 
-  getIdadeAleatoria(): number {
-    return Math.floor(Math.random() * 10) + 20; // 20-30 anos
+  getIdadeAleatoria(jogadorId?: string): number {
+    if (jogadorId && this.idades.has(jogadorId)) {
+      return this.idades.get(jogadorId)!;
+    }
+    return Math.floor(Math.random() * 10) + 20;
+  }
+
+  getTags(jogador: Sugestao | null): string[] {
+    if (!jogador || !jogador.id) return ['Gamer'];
+    if (this.tagsList.has(jogador.id)) {
+      return this.tagsList.get(jogador.id)!;
+    }
+    return ['MMORPG', 'Voice Chat', 'Late Night'];
   }
 
   passar(): void {

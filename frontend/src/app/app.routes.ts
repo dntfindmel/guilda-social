@@ -44,30 +44,24 @@ export const routes: Routes = [
        .then(m => m.EditarPerfilComponent),
      canActivate: [AuthGuard]
    },
-  // {
-  //   path: 'grupos',
-  //   loadComponent: () => import('./features/grupos/listar-grupos/listar-grupos.component')
-  //     .then(m => m.ListarGruposComponent),
-  //   canActivate: [AuthGuard]
-  // },
-  // {
-  //   path: 'grupos/criar',
-  //   loadComponent: () => import('./features/grupos/criar-grupo/criar-grupo.component')
-  //     .then(m => m.CriarGrupoComponent),
-  //   canActivate: [AuthGuard]
-  // },
-  // {
-  //   path: 'grupo/:id',
-  //   loadComponent: () => import('./features/grupos/detalhe-grupo/detalhe-grupo.component')
-  //     .then(m => m.DetalheGrupoComponent),
-  //   canActivate: [AuthGuard]
-  // },
-  // {
-  //   path: 'configuracoes',
-  //   loadComponent: () => import('./features/configuracoes/configuracoes.component')
-  //     .then(m => m.ConfiguracoesComponent),
-  //   canActivate: [AuthGuard]
-  // },
+  {
+  path: 'grupos',
+  loadComponent: () => import('./features//listar-grupos/listar-grupos.component')
+    .then(m => m.ListarGruposComponent),
+  canActivate: [AuthGuard]
+},
+{
+  path: 'grupos/criar',
+  loadComponent: () => import('./features/criar-grupo/criar-grupo.component')
+    .then(m => m.CriarGrupoComponent),
+  canActivate: [AuthGuard]
+},
+{
+  path: 'grupo/:id',
+  loadComponent: () => import('./features/detalhe-grupo/detalhe-grupo.component')
+    .then(m => m.DetalheGrupoComponent),
+  canActivate: [AuthGuard]
+},
 
   // Fallback
   { path: '**', redirectTo: '/login' }

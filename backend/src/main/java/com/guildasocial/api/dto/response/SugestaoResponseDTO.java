@@ -52,4 +52,5 @@ public class SugestaoResponseDTO {
 
     public Integer getNivelAfinidade() { return nivelAfinidade; }
     public void setNivelAfinidade(Integer nivelAfinidade) { this.nivelAfinidade = nivelAfinidade; }
+    
 }

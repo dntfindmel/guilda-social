@@ -32,25 +32,30 @@
 
       <!-- Card Principal -->
       <div class="card" [class.animate-out]="animating">
+        <!-- Imagem de fundo do card -->
+        <div class="card-bg" *ngIf="getFotoUrl(currentCard)" [style.backgroundImage]="'url(' + getFotoUrl(currentCard) + ')'"></div>
+        <div class="card-bg card-bg-gradient" *ngIf="!getFotoUrl(currentCard)"></div>
+
+        <!-- Overlay escuro para contraste -->
+        <div class="card-overlay"></div>
+
+        <!-- Conteúdo do card -->
         <div class="card-content" *ngIf="currentCard">
           <div class="card-header">
-            <div class="avatar">
-              <div class="avatar-initials">{{ currentCard.nome?.charAt(0) || 'U' }}{{ currentCard.nome?.charAt(1) || '' }}</div>
-            </div>
             <div class="level-badge">
-              LVL {{ getNivelAleatorio() }}
+              LVL {{ getNivelAleatorio(currentCard.id) }}
             </div>
           </div>
 
           <div class="card-info">
-            <h2>{{ currentCard.nome }}, {{ getIdadeAleatoria() }}</h2>
-            <p class="distance">📍 À {{ getDistanciaAleatoria() }}km de você</p>
+            <h2>{{ currentCard.nome }}, {{ getIdadeAleatoria(currentCard.id) }}</h2>
+            <p class="distance">📍 À {{ getDistanciaAleatoria(currentCard.id) }}km de você</p>
           </div>
 
           <div class="tags">
-            <span class="tag">MMORPG</span>
-            <span class="tag">Voice Chat</span>
-            <span class="tag">Late Night</span>
+            <span class="tag" *ngFor="let tag of getTags(currentCard)">
+              {{ tag }}
+            </span>
           </div>
 
           <div class="description">
@@ -75,12 +80,15 @@
         <div class="recent-cards">
           <div class="recent-card" *ngFor="let jogador of sugestoes.slice(1, 4)">
             <div class="recent-avatar">
-              <div class="recent-avatar-initials">{{ jogador.nome?.charAt(0) || 'U' }}{{ jogador.nome?.charAt(1) || '' }}</div>
+              <img *ngIf="getFotoUrl(jogador)" [src]="getFotoUrl(jogador)" alt="Foto">
+              <div *ngIf="!getFotoUrl(jogador)" class="recent-avatar-initials">
+                {{ jogador.nome?.charAt(0) || 'U' }}{{ jogador.nome?.charAt(1) || '' }}
+              </div>
             </div>
             <div class="recent-info">
-              <div class="recent-name">{{ jogador.nome }}, {{ getIdadeAleatoria() }}</div>
-              <div class="recent-distance">📍 À {{ getDistanciaAleatoria() }}km de você</div>
-              <div class="recent-level">LVL {{ getNivelAleatorio() }}</div>
+              <div class="recent-name">{{ jogador.nome }}, {{ getIdadeAleatoria(jogador.id) }}</div>
+              <div class="recent-distance">📍 À {{ getDistanciaAleatoria(jogador.id) }}km de você</div>
+              <div class="recent-level">LVL {{ getNivelAleatorio(jogador.id) }}</div>
             </div>
           </div>
         </div>

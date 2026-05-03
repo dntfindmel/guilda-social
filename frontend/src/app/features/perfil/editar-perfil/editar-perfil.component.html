@@ -58,7 +58,13 @@
 
           <div class="form-group">
             <label>Telefone</label>
-            <input type="tel" formControlName="telefone" placeholder="(11) 99999-9999">
+            <input
+              type="tel"
+              formControlName="telefone"
+              placeholder="11999999999"
+              inputmode="numeric"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+              maxlength="11">
           </div>
 
           <div class="row">
