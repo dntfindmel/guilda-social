@@ -118,25 +118,26 @@ export class SugestoesComponent implements OnInit {
     }, 300);
   }
 
-  solicitarChat(): void {
-    if (this.animating || !this.currentCard) return;
-    this.animating = true;
+solicitarChat(): void {
+  if (this.animating || !this.currentCard) return;
+  this.animating = true;
 
-    const usuarioId = this.authService.getUsuarioId();
-    if (usuarioId && this.currentCard) {
-      this.matchService.enviarSolicitacao(usuarioId, this.currentCard.id).subscribe({
-        next: () => {
-          alert('Solicitação enviada!');
-          this.currentIndex++;
-          this.animating = false;
-        },
-        error: () => {
-          alert('Erro ao enviar solicitação');
-          this.animating = false;
-        }
-      });
-    }
+  const usuarioId = this.authService.getUsuarioId();
+  if (usuarioId && this.currentCard) {
+    this.matchService.enviarSolicitacao(usuarioId, this.currentCard.id).subscribe({
+      next: () => {
+        alert('Solicitação enviada!');
+        this.router.navigate(['/chat']);
+        this.animating = false;
+      },
+      error: () => {
+        alert('Erro ao enviar solicitação');
+        this.animating = false;
+      }
+    });
   }
+}
+
 
   recarregar(): void {
     this.carregarSugestoes();
