@@ -78,7 +78,6 @@ public class GrupoService {
         grupo.getMembros().remove(usuario);
         grupo.setVagasPreenchidas(grupo.getVagasPreenchidas() - 1);
 
-        // Se o líder sair, transfere liderança
         if (grupo.getLider().getId().equals(usuarioId) && !grupo.getMembros().isEmpty()) {
             grupo.setLider(grupo.getMembros().get(0));
         }

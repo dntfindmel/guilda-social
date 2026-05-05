@@ -28,8 +28,6 @@ public class MatchController {
 
     @GetMapping("/sugestoes/{usuarioId}")
     public ResponseEntity<List<SugestaoResponseDTO>> getSugestoes(@PathVariable UUID usuarioId) {
-        System.out.println("=== GET /matches/sugestoes/" + usuarioId + " ===");
-
         List<Usuario> sugestoes = matchService.getSugestoes(usuarioId);
         Usuario usuarioAtual = matchService.getUsuarioById(usuarioId);
 
@@ -48,14 +46,18 @@ public class MatchController {
             })
             .collect(Collectors.toList());
 
-        System.out.println("Retornando " + response.size() + " sugestões");
-
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/solicitar/{usuarioId}")
+   @PostMapping("/solicitar/{usuarioId}")
     public ResponseEntity<MatchResponseDTO> enviarSolicitacao(
-            @PathVariable UUID usuarioId, @RequestBody MatchRequestDTO request) {
+            @PathVariable UUID usuarioId,
+            @RequestBody MatchRequestDTO request) {
+
+        System.out.println("Recebendo solicitação de match");
+        System.out.println("Remetente ID: " + usuarioId);
+        System.out.println("Alvo ID: " + request.getAlvoId());
+
         Match match = matchService.enviarSolicitacao(usuarioId, request.getAlvoId());
 
         MatchResponseDTO response = new MatchResponseDTO();

@@ -53,4 +53,10 @@ public class Match {
 
     public LocalDateTime getDataResposta() { return dataResposta; }
     public void setDataResposta(LocalDateTime dataResposta) { this.dataResposta = dataResposta; }
+
+    @Transient
+    private Mensagem ultimaMensagem;
+
+    public Mensagem getUltimaMensagem() { return ultimaMensagem; }
+    public void setUltimaMensagem(Mensagem ultimaMensagem) { this.ultimaMensagem = ultimaMensagem; }
 }

@@ -47,30 +47,41 @@ public class MatchService {
                 .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
     }
 
-    @Transactional
-    public Match enviarSolicitacao(UUID usuarioId, UUID alvoId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
-        Usuario alvo = usuarioRepository.findById(alvoId)
-                .orElseThrow(() -> new BusinessException("Usuário alvo não encontrado"));
+@Transactional
+public Match enviarSolicitacao(UUID usuarioId, UUID alvoId) {
+    System.out.println("=== enviarSolicitacao ===");
+    System.out.println("usuarioId: " + usuarioId);
+    System.out.println("alvoId: " + alvoId);
 
-        if (matchRepository.existsByUsuario1AndUsuario2(usuario, alvo)) {
-            throw new BusinessException("Solicitação já enviada");
-        }
-
-        int afinidade = matchmakingService.calcularAfinidade(usuario, alvo);
-
-        Match match = new Match();
-        match.setUsuario1(usuario);
-        match.setUsuario2(alvo);
-        match.setNivelAfinidade(afinidade);
-        match.setStatus("PENDENTE");
-        match.setDataMatch(LocalDateTime.now());
-
-        System.out.println("Solicitação enviada: " + usuario.getNome() + " -> " + alvo.getNome());
-
-        return matchRepository.save(match);
+    // Validar se o alvo é diferente do remetente
+    if (usuarioId.equals(alvoId)) {
+        throw new BusinessException("Não é possível enviar solicitação para si mesmo");
     }
+
+    Usuario usuario = usuarioRepository.findById(usuarioId)
+            .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
+    Usuario alvo = usuarioRepository.findById(alvoId)
+            .orElseThrow(() -> new BusinessException("Usuário alvo não encontrado"));
+
+    // Verificar se já existe match
+    if (matchRepository.existsByUsuario1AndUsuario2(usuario, alvo)) {
+        throw new BusinessException("Solicitação já enviada");
+    }
+
+    int afinidade = matchmakingService.calcularAfinidade(usuario, alvo);
+
+    Match match = new Match();
+    match.setUsuario1(usuario);
+    match.setUsuario2(alvo);
+    match.setNivelAfinidade(afinidade);
+    match.setStatus("ACEITO"); // Aceitar automaticamente para teste
+    match.setDataMatch(LocalDateTime.now());
+    match.setDataResposta(LocalDateTime.now());
+
+    System.out.println("Match criado com sucesso!");
+
+    return matchRepository.save(match);
+}
 
     @Transactional
     public Match responderSolicitacao(UUID matchId, String status) {
@@ -89,5 +100,10 @@ public class MatchService {
                 .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
 
         return matchRepository.findMatchesByUsuario(usuario, "ACEITO");
+    }
+
+    @Transactional(readOnly = true)
+    public List<Match> getTodosMatches(UUID usuarioId) {
+        return matchRepository.findAllByUsuarioId(usuarioId);
     }
 }

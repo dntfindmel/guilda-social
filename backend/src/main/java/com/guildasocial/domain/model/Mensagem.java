@@ -13,12 +13,11 @@ public class Mensagem {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "grupo_id", nullable = false)
-    private Grupo grupo;
+    @JoinColumn(name = "match_id", nullable = false)
+    private Match match;
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    @Column(name = "remetente_id", nullable = false)
+    private UUID remetenteId;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String conteudo;
@@ -33,11 +32,11 @@ public class Mensagem {
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
 
-    public Grupo getGrupo() { return grupo; }
-    public void setGrupo(Grupo grupo) { this.grupo = grupo; }
+    public Match getMatch() { return match; }
+    public void setMatch(Match match) { this.match = match; }
 
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    public UUID getRemetenteId() { return remetenteId; }
+    public void setRemetenteId(UUID remetenteId) { this.remetenteId = remetenteId; }
 
     public String getConteudo() { return conteudo; }
     public void setConteudo(String conteudo) { this.conteudo = conteudo; }
