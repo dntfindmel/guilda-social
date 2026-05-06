@@ -11,6 +11,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
     networks:
       - guilda-network
     healthcheck:
@@ -21,8 +22,18 @@ services:
 
   backend:
     image: dntfindmel/guilda-social-backend:1.0.0
+    build: ./backend
     restart: unless-stopped
     container_name: guilda-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: guilda_social
+      DB_USER: guilda_user
+      DB_PASSWORD: guilda_pass
+      JWT_SECRET: guildaSocialSecretKey2024SuperSecureForJWTTokenGenerationWithAtLeast512Bits
+      JWT_EXPIRATION: 86400000
     ports:
       - "8080:8080"
     depends_on:
@@ -30,15 +41,12 @@ services:
         condition: service_healthy
     networks:
       - guilda-network
-    environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=guilda_social
-      - DB_USER=guilda_user
-      - DB_PASSWORD=guilda_pass
+    volumes:
+      - uploads:/app/uploads
 
   frontend:
     image: dntfindmel/guilda-social-frontend:1.0.0
+    build: ./frontend
     restart: unless-stopped
     container_name: guilda-frontend
     ports:
@@ -50,6 +58,7 @@ services:
 
 volumes:
   postgres_data:
+  uploads:
 
 networks:
   guilda-network:

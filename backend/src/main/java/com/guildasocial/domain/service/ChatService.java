@@ -2,7 +2,6 @@ package com.guildasocial.domain.service;
 
 import com.guildasocial.domain.model.Match;
 import com.guildasocial.domain.model.Mensagem;
-import com.guildasocial.domain.model.Usuario;
 import com.guildasocial.domain.repository.MatchRepository;
 import com.guildasocial.domain.repository.MensagemRepository;
 import com.guildasocial.domain.repository.UsuarioRepository;
@@ -36,7 +35,7 @@ public class ChatService {
     @Transactional
     public Mensagem enviarMensagem(UUID matchId, UUID remetenteId, String conteudo) {
         Match match = matchRepository.findById(matchId)
-                .orElseThrow(() -> new RuntimeException("Match não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Match não encontrado: " + matchId));
 
         Mensagem mensagem = new Mensagem();
         mensagem.setMatch(match);
@@ -49,32 +48,38 @@ public class ChatService {
     }
 
     public List<Match> getMatchesComUltimaMensagem(UUID usuarioId) {
-        // Validar parâmetro
-        if (usuarioId == null) {
-            return new ArrayList<>();
-        }
+        var usuario = usuarioRepository.findById(usuarioId).orElse(null);
+        if (usuario == null) return new ArrayList<>();
 
-        // Buscar usuário
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElse(null);
-
-        if (usuario == null) {
-            return new ArrayList<>();
-        }
-
-        // Buscar matches onde o usuário é usuario1 OU usuario2 com status ACEITO
         List<Match> matches1 = matchRepository.findByUsuario1AndStatus(usuario, "ACEITO");
         List<Match> matches2 = matchRepository.findByUsuario2AndStatus(usuario, "ACEITO");
 
-        // Combinar as duas listas
         List<Match> allMatches = new ArrayList<>();
         allMatches.addAll(matches1);
         allMatches.addAll(matches2);
 
-        // Para cada match, buscar a última mensagem
+        // Para cada match, buscar apenas a última mensagem (sem carregar a lista completa)
         for (Match match : allMatches) {
-            Mensagem ultima = mensagemRepository.findTopByMatchOrderByDataEnvioDesc(match);
-            match.setUltimaMensagem(ultima);
+            try {
+                List<Mensagem> mensagens = mensagemRepository.findByMatchIdOrderByDataEnvioAsc(match.getId());
+                if (!mensagens.isEmpty()) {
+                    // Criar uma nova instância apenas com os dados necessários
+                    Mensagem ultima = mensagens.get(mensagens.size() - 1);
+                    // Criar uma cópia para evitar o loop
+                    Mensagem copia = new Mensagem();
+                    copia.setId(ultima.getId());
+                    copia.setConteudo(ultima.getConteudo());
+                    copia.setDataEnvio(ultima.getDataEnvio());
+                    copia.setRemetenteId(ultima.getRemetenteId());
+                    copia.setLida(ultima.getLida());
+                    match.setUltimaMensagem(copia);
+                } else {
+                    match.setUltimaMensagem(null);
+                }
+            } catch (Exception e) {
+                System.err.println("Erro ao buscar mensagem para match " + match.getId() + ": " + e.getMessage());
+                match.setUltimaMensagem(null);
+            }
         }
 
         return allMatches;

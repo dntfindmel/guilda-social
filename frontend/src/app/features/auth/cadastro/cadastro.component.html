@@ -52,30 +52,21 @@
         </div>
         <div class="form-group col">
           <label>Telefone</label>
-          <input
-            type="tel"
-            formControlName="telefone"
-            placeholder="11999999999"
-            inputmode="numeric"
-            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-            maxlength="11">
+          <input type="tel" formControlName="telefone" placeholder="(11) 99999-9999">
         </div>
       </div>
 
-      <div class="row">
-        <div class="form-group col">
-          <label>Cidade *</label>
-          <input type="text" formControlName="cidade" placeholder="Sua cidade"
-            [class.invalid]="cadastroForm.get('cidade')?.invalid && cadastroForm.get('cidade')?.touched">
+      <!-- Localização Automática (oculta, apenas para exibir) -->
+      <div class="location-info" *ngIf="cidadeAtual">
+        <div class="info-card">
+          <span class="location-icon">📍</span>
+          <span class="location-text">Localização detectada: {{ cidadeAtual }}/{{ estadoAtual }}</span>
         </div>
-        <div class="form-group col">
-          <label>Estado *</label>
-          <select formControlName="estado"
-            [class.invalid]="cadastroForm.get('estado')?.invalid && cadastroForm.get('estado')?.touched">
-            <option value="">Selecione</option>
-            <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
-          </select>
-        </div>
+      </div>
+
+      <div class="loading-location" *ngIf="carregandoLocalizacao">
+        <span class="spinner-small"></span>
+        <span>Detectando sua localização...</span>
       </div>
 
       <div class="row">
@@ -150,7 +141,7 @@
       </div>
 
       <!-- Botão -->
-      <button type="submit" class="btn-finalizar" [disabled]="loading">
+      <button type="submit" class="btn-finalizar" [disabled]="loading || carregandoLocalizacao">
         <span *ngIf="!loading">Finalizar cadastro</span>
         <span *ngIf="loading" class="loading-spinner"></span>
       </button>

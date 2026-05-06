@@ -1,7 +1,9 @@
 package com.guildasocial.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -32,6 +34,13 @@ public class Match {
     @Column(name = "data_resposta")
     private LocalDateTime dataResposta;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Mensagem> mensagens;
+
+    @Transient
+    private Mensagem ultimaMensagem;
+
     // Getters e Setters
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
@@ -54,8 +63,8 @@ public class Match {
     public LocalDateTime getDataResposta() { return dataResposta; }
     public void setDataResposta(LocalDateTime dataResposta) { this.dataResposta = dataResposta; }
 
-    @Transient
-    private Mensagem ultimaMensagem;
+    public List<Mensagem> getMensagens() { return mensagens; }
+    public void setMensagens(List<Mensagem> mensagens) { this.mensagens = mensagens; }
 
     public Mensagem getUltimaMensagem() { return ultimaMensagem; }
     public void setUltimaMensagem(Mensagem ultimaMensagem) { this.ultimaMensagem = ultimaMensagem; }

@@ -138,6 +138,16 @@ solicitarChat(): void {
   }
 }
 
+jaSolicitou(jogadorId: string): boolean {
+    // Verificar se já foi enviada solicitação para este jogador
+    const solicitacoes = localStorage.getItem('solicitacoesEnviadas');
+    if (solicitacoes) {
+        const enviadas = JSON.parse(solicitacoes);
+        return enviadas.includes(jogadorId);
+    }
+    return false;
+}
+
 
   recarregar(): void {
     this.carregarSugestoes();

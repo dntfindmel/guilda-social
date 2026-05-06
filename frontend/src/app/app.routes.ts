@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 import { LoginGuard } from './core/guards/login.guard';
 import { ChatComponent } from './features/chat/chat.component';
-import { ChatDetalheComponent } from './features/chat/chat-detalhe/chat-detalhe.component';
+import { ChatDetalheComponent } from './features/chat-detalhe/chat-detalhe.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -72,7 +72,7 @@ export const routes: Routes = [
 },
 {
   path: 'chat/detalhe/:id',
-  loadComponent: () => import('./features/chat/chat-detalhe/chat-detalhe.component')
+  loadComponent: () => import('./features/chat-detalhe/chat-detalhe.component')
     .then(m => m.ChatDetalheComponent),
   canActivate: [AuthGuard]
 },

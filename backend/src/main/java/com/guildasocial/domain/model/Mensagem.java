@@ -1,5 +1,6 @@
 package com.guildasocial.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -12,6 +13,7 @@ public class Mensagem {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "match_id", nullable = false)
     private Match match;
@@ -19,13 +21,13 @@ public class Mensagem {
     @Column(name = "remetente_id", nullable = false)
     private UUID remetenteId;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String conteudo;
 
     @Column(name = "data_envio")
     private LocalDateTime dataEnvio = LocalDateTime.now();
 
-    @Column(name = "lida")
+    @Column(nullable = false)
     private Boolean lida = false;
 
     // Getters e Setters

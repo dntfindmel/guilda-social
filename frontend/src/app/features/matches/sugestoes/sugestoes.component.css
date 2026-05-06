@@ -231,7 +231,7 @@
 .loading-container, .error-container, .empty-container {
   text-align: center;
   padding: 60px 20px;
-  background: white;
+  background: rgba(47, 42, 22, 0.8);
   border-radius: 32px;
 }
 
@@ -250,6 +250,7 @@
 }
 
 .btn-retry {
+  margin-top: 16px;
   background: #F4C025;
   color: #221E10;
   border: none;

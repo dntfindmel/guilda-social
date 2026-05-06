@@ -9,7 +9,7 @@ import { Match, Sugestao } from '../models/match.model';
 })
 export class MatchService {
   private apiUrl = 'http://localhost:8080/api/matches';
-  private chatUrl = 'http://localhost:8080/api/chat';  
+  private chatUrl = 'http://localhost:8080/api/chat';
 
   constructor(private http: HttpClient) {}
 
@@ -24,18 +24,25 @@ export class MatchService {
     return this.http.post<Match>(`${this.apiUrl}/solicitar/${usuarioId}`, payload);
   }
 
-  // CORRIGIDO: usar chatUrl em vez de apiUrl
+  // Lista de matches para chat
   getMeusMatches(usuarioId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.chatUrl}/matches/${usuarioId}`);
   }
 
-  // CORRIGIDO: usar chatUrl em vez de apiUrl
+  // Buscar mensagens de um match
   getMensagensChat(matchId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.chatUrl}/mensagens/${matchId}`);
   }
 
-  // CORRIGIDO: usar chatUrl em vez de apiUrl
+  // Enviar mensagem
   enviarMensagem(matchId: string, remetenteId: string, conteudo: string): Observable<any> {
-    return this.http.post(`${this.chatUrl}/mensagens/${matchId}?remetenteId=${remetenteId}&conteudo=${conteudo}`, {});
+    // CORRIGIDO: enviar no corpo da requisição
+    const payload = { remetenteId, conteudo };
+    return this.http.post(`${this.chatUrl}/mensagens/${matchId}`, payload);
+  }
+
+    // match.service.ts
+  getConversasNaoLidas(usuarioId: string): Observable<number> {
+    return this.http.get<number>(`${this.chatUrl}/nao-lidas/${usuarioId}`);
   }
 }

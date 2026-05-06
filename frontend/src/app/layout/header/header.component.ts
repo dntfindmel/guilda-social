@@ -1,7 +1,8 @@
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { MatchService } from '../../core/services/match.service';
 
 @Component({
   selector: 'app-header',
@@ -13,26 +14,38 @@ import { AuthService } from '../../core/services/auth.service';
 export class HeaderComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private matchService = inject(MatchService);
 
-  @Output() recarregar = new EventEmitter<void>();
+  mensagensNaoLidas: number = 0;
+
+  constructor() {
+    this.carregarMensagensNaoLidas();
+  }
+
+  carregarMensagensNaoLidas() {
+    const usuarioId = this.authService.getUsuarioId();
+    if (usuarioId) {
+      this.matchService.getConversasNaoLidas(usuarioId).subscribe({
+        next: (count) => this.mensagensNaoLidas = count,
+        error: () => this.mensagensNaoLidas = 0
+      });
+    }
+  }
 
   getUsuarioNome(): string {
     return localStorage.getItem('usuarioNome') || 'Jogador';
   }
 
   irParaPerfil(): void {
-    const usuarioId = this.authService.getUsuarioId();
-    if (usuarioId) {
-      this.router.navigate(['/perfil']);
-    }
+    this.router.navigate(['/perfil']);
+  }
+
+  irParaChat(): void {
+    this.router.navigate(['/chat']);
   }
 
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
-  }
-
-  onRecarregar(): void {
-    this.recarregar.emit();
   }
 }

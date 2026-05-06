@@ -18,7 +18,7 @@ export class CadastroComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
   private usuarioService = inject(UsuarioService);
-  private geolocationService = inject(GeolocationService);  // ADICIONADO
+  private geolocationService = inject(GeolocationService);
 
   @ViewChild('fotoInput') fotoInput!: ElementRef<HTMLInputElement>;
 
@@ -27,9 +27,9 @@ export class CadastroComponent implements OnInit {
   errorMessage = '';
   fotoPreview: string | undefined;
   fotoFile: File | null = null;
-  usuarioIdTemp: string | null = null;
-
-  estados = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
+  carregandoLocalizacao = false;
+  cidadeAtual: string = '';
+  estadoAtual: string = '';
 
   constructor() {
     this.cadastroForm = this.fb.group({
@@ -39,36 +39,20 @@ export class CadastroComponent implements OnInit {
       confirmarSenha: ['', Validators.required],
       dataNascimento: ['', [Validators.required, this.validarIdade]],
       telefone: ['', [Validators.pattern(/^[0-9]{10,11}$/)]],
-      cidade: ['', Validators.required],
-      estado: ['', Validators.required],
       descricao: ['', [Validators.maxLength(500)]],
       interesseTabuleiro: [false],
       interesseCartas: [false],
       interesseRPG: [false],
       aceitaTermos: [false, Validators.requiredTrue],
       latitude: [null],
-      longitude: [null]
+      longitude: [null],
+      cidade: [{ value: '', disabled: true }],
+      estado: [{ value: '', disabled: true }]
     }, { validators: this.checkSenhas });
   }
 
   ngOnInit(): void {
     this.obterLocalizacao();
-  }
-
-  obterLocalizacao(): void {
-    this.geolocationService.getCurrentPosition().subscribe({
-      next: (location) => {
-        this.cadastroForm.patchValue({
-          latitude: location.lat,
-          longitude: location.lng,
-          cidade: location.cidade,
-          estado: location.estado
-        });
-      },
-      error: (error) => {
-        console.log('Localização não disponível:', error);
-      }
-    });
   }
 
   checkSenhas(group: FormGroup): ValidationErrors | null {
@@ -90,6 +74,29 @@ export class CadastroComponent implements OnInit {
     }
 
     return idade >= 13 ? null : { menorIdade: true };
+  }
+
+  obterLocalizacao(): void {
+    this.carregandoLocalizacao = true;
+
+    this.geolocationService.getCurrentPosition().subscribe({
+      next: (location) => {
+        this.cadastroForm.patchValue({
+          latitude: location.lat,
+          longitude: location.lng,
+          cidade: location.cidade,
+          estado: location.estado
+        });
+        this.cidadeAtual = location.cidade;
+        this.estadoAtual = location.estado;
+        this.carregandoLocalizacao = false;
+      },
+      error: (error) => {
+        console.error('Erro ao obter localização:', error);
+        this.carregandoLocalizacao = false;
+        this.errorMessage = 'Não foi possível detectar sua localização. Verifique as permissões do navegador.';
+      }
+    });
   }
 
   selecionarFoto(): void {
@@ -116,12 +123,8 @@ export class CadastroComponent implements OnInit {
 
     this.http.post<{ fotoUrl: string }>(`http://localhost:8080/api/upload/foto/${usuarioId}`, formData)
       .subscribe({
-        next: () => {
-          console.log('Foto enviada com sucesso');
-        },
-        error: (error) => {
-          console.error('Erro ao enviar foto:', error);
-        }
+        next: () => console.log('Foto enviada'),
+        error: (error) => console.error('Erro ao enviar foto:', error)
       });
   }
 
@@ -139,13 +142,13 @@ export class CadastroComponent implements OnInit {
         nome: this.cadastroForm.get('nome')?.value,
         email: this.cadastroForm.get('email')?.value,
         dataNascimento: this.cadastroForm.get('dataNascimento')?.value,
-        cidade: this.cadastroForm.get('cidade')?.value,
-        estado: this.cadastroForm.get('estado')?.value,
         telefone: this.cadastroForm.get('telefone')?.value || undefined,
         descricao: this.cadastroForm.get('descricao')?.value || undefined,
         interesses: interesses.length > 0 ? interesses : undefined,
-        latitude: this.cadastroForm.get('latitude')?.value || undefined,
-        longitude: this.cadastroForm.get('longitude')?.value || undefined
+        latitude: this.cadastroForm.get('latitude')?.value,
+        longitude: this.cadastroForm.get('longitude')?.value,
+        cidade: this.cidadeAtual,
+        estado: this.estadoAtual
       };
 
       const senha = this.cadastroForm.get('senha')?.value;

@@ -8,8 +8,8 @@ COPY . .
 RUN npm run build:prod
 
 FROM node:20-alpine
+RUN npm install -g serve
+COPY --from=build /app/dist/guilda-social-frontend /app
 WORKDIR /app
-COPY --from=build /app/dist/guilda-social-frontend /app/public
-COPY server.js /app/server.js
 EXPOSE 80
-CMD ["node", "server.js"]
+CMD ["serve", "-s", ".", "-l", "80"]

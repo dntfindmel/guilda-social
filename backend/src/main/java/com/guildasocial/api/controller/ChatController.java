@@ -18,11 +18,6 @@ public class ChatController {
         this.chatService = chatService;
     }
 
-    @GetMapping("/matches/{usuarioId}")
-    public ResponseEntity<List<Match>> getMatchesComChat(@PathVariable UUID usuarioId) {
-        return ResponseEntity.ok(chatService.getMatchesComUltimaMensagem(usuarioId));
-    }
-
     @GetMapping("/mensagens/{matchId}")
     public ResponseEntity<List<Mensagem>> getMensagens(@PathVariable UUID matchId) {
         return ResponseEntity.ok(chatService.getMensagens(matchId));
@@ -31,11 +26,24 @@ public class ChatController {
     @PostMapping("/mensagens/{matchId}")
     public ResponseEntity<Mensagem> enviarMensagem(
             @PathVariable UUID matchId,
-            @RequestParam UUID remetenteId,
-            @RequestParam String conteudo) {
-        if (matchId == null || remetenteId == null || conteudo == null || conteudo.trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(chatService.enviarMensagem(matchId, remetenteId, conteudo));
+            @RequestBody MensagemRequest request) {
+        Mensagem mensagem = chatService.enviarMensagem(matchId, request.getRemetenteId(), request.getConteudo());
+        return ResponseEntity.ok(mensagem);
     }
+
+    @GetMapping("/matches/{usuarioId}")
+    public ResponseEntity<List<Match>> getMatchesComChat(@PathVariable UUID usuarioId) {
+        List<Match> matches = chatService.getMatchesComUltimaMensagem(usuarioId);
+        return ResponseEntity.ok(matches);
+    }
+}
+
+class MensagemRequest {
+    private UUID remetenteId;
+    private String conteudo;
+
+    public UUID getRemetenteId() { return remetenteId; }
+    public void setRemetenteId(UUID remetenteId) { this.remetenteId = remetenteId; }
+    public String getConteudo() { return conteudo; }
+    public void setConteudo(String conteudo) { this.conteudo = conteudo; }
 }

@@ -1,52 +1,59 @@
 <div class="chat-container">
-  <div class="chat-header">
-    <h1>Conversas</h1>
-    <button class="btn-refresh" (click)="carregarMatches()" [disabled]="loading">
-      🔄
-    </button>
-  </div>
+  <div class="chat-content">
+    <!-- Header -->
+    <div class="chat-header">
+      <button class="btn-back-sugestoes" (click)="irParaSugestoes()">
+        ← Sugestões
+      </button>
+      <h1>Conversas</h1>
+      <button class="btn-refresh" (click)="carregarMatches()" [disabled]="loading">🔄</button>
+    </div>
 
-  <!-- Loading -->
-  <div class="loading-container" *ngIf="loading">
-    <div class="spinner"></div>
-    <p>Carregando conversas...</p>
-  </div>
+    <!-- Loading -->
+    <div class="loading-container" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Carregando conversas...</p>
+    </div>
 
-  <!-- Error -->
-  <div class="error-container" *ngIf="errorMessage && !loading">
-    <div class="error-icon">⚠️</div>
-    <p>{{ errorMessage }}</p>
-    <button class="btn-retry" (click)="carregarMatches()">Tentar novamente</button>
-  </div>
+    <!-- Error -->
+    <div class="error-container" *ngIf="errorMessage && !loading">
+      <p>{{ errorMessage }}</p>
+      <button class="btn-retry" (click)="carregarMatches()">Tentar novamente</button>
+    </div>
 
-  <!-- Sem conversas -->
-  <div class="empty-container" *ngIf="!loading && !errorMessage && matches.length === 0">
-    <div class="empty-icon">💬</div>
-    <h3>Nenhuma conversa ainda</h3>
-    <p>Quando você aceitar um match, suas conversas aparecerão aqui.</p>
-    <button class="btn-encontrar" routerLink="/sugestoes">Encontrar jogadores</button>
-  </div>
+    <!-- Empty -->
+    <div class="empty-container" *ngIf="!loading && !errorMessage && matches.length === 0">
+      <div class="empty-icon">💬</div>
+      <h3>Nenhuma conversa ainda</h3>
+      <p>Quando você aceitar um match, suas conversas aparecerão aqui.</p>
+      <button class="btn-encontrar" routerLink="/sugestoes">Encontrar jogadores</button>
+    </div>
 
-  <!-- Lista de conversas -->
-  <div class="matches-list" *ngIf="!loading && !errorMessage && matches.length > 0">
-    <div
-      *ngFor="let match of matches"
-      class="match-item"
-      [routerLink]="['/chat/detalhe', match.id]"
-    >
-      <div class="avatar">
-        {{ getNomeAmigo(match).charAt(0).toUpperCase() }}
-      </div>
-
-      <div class="info">
-        <div class="info-header">
-          <strong>{{ getNomeAmigo(match) }}</strong>
-          <small *ngIf="getDataUltimaMensagem(match)">{{ getDataUltimaMensagem(match) }}</small>
+    <!-- Lista de conversas -->
+    <div class="matches-list" *ngIf="!loading && !errorMessage && matches.length > 0">
+      <div
+        *ngFor="let match of matches"
+        class="match-item"
+        [class.sem-resposta]="getStatusChat(match).destaque"
+        [routerLink]="['/chat/detalhe', match.id]"
+      >
+        <!-- Avatar com foto -->
+        <div class="avatar">
+          <img *ngIf="getFotoAmigo(match)" [src]="getFotoAmigo(match)" alt="Foto">
+          <span *ngIf="!getFotoAmigo(match)">{{ getNomeAmigo(match).charAt(0).toUpperCase() }}</span>
         </div>
-        <p class="ultima-mensagem">
-          {{ getUltimaMensagem(match) }}
-        </p>
-        <span class="match-status">✨ Match confirmado!</span>
+
+        <!-- Informações -->
+        <div class="info">
+          <div class="info-header">
+            <strong>{{ getNomeAmigo(match) }}</strong>
+            <small>{{ getDataUltimaMensagem(match) }}</small>
+          </div>
+          <p class="ultima-mensagem">{{ getUltimaMensagem(match) }}</p>
+          <span class="match-status {{ getStatusChat(match).classe }}">
+            {{ getStatusChat(match).texto }}
+          </span>
+        </div>
       </div>
     </div>
   </div>

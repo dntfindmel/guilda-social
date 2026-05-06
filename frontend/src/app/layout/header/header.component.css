@@ -75,3 +75,39 @@
   background: #E2E8F0;
   color: #221E10;
 }
+
+.nav-icons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.icon-btn-chat, .icon-btn-perfil, .icon-btn-logout {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: rgba(244, 192, 37, 0.15);
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.icon-btn-chat:hover, .icon-btn-perfil:hover, .icon-btn-logout:hover {
+  background: rgba(244, 192, 37, 0.3);
+  transform: scale(1.05);
+}
+
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #F44336;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+  min-width: 18px;
+}
