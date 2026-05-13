@@ -6,9 +6,10 @@ export interface Perfil {
   cidade: string;
   estado: string;
   descricao?: string;
-  fotoPerfil?: string; 
+  fotoPerfil?: string;
   dataCadastro: Date;
   ativo: boolean;
+  distanciaMaximaKm?: number;  
 }
 
 export interface AtualizarPerfilRequest {
@@ -18,4 +19,5 @@ export interface AtualizarPerfilRequest {
   estado?: string;
   descricao?: string;
   fotoPerfil?: string;
+  distanciaMaximaKm?: number;
 }

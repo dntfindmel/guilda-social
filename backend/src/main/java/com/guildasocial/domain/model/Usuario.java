@@ -63,6 +63,15 @@ public class Usuario {
     @Column(name = "ultimo_login")
     private LocalDateTime ultimoLogin;
 
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "reset_token_expiry")
+    private LocalDateTime resetTokenExpiry;
+
+    @Column(name = "distancia_maxima_km")
+    private Integer distanciaMaximaKm = 20;
+
     // Construtor padrão
     public Usuario() {}
 
@@ -186,4 +195,14 @@ public class Usuario {
     public void setUltimoLogin(LocalDateTime ultimoLogin) {
         this.ultimoLogin = ultimoLogin;
     }
+
+    // Getters e Setters
+    public String getResetToken() { return resetToken; }
+    public void setResetToken(String resetToken) { this.resetToken = resetToken; }
+
+    public LocalDateTime getResetTokenExpiry() { return resetTokenExpiry; }
+    public void setResetTokenExpiry(LocalDateTime resetTokenExpiry) { this.resetTokenExpiry = resetTokenExpiry; }
+
+    public Integer getDistanciaMaximaKm() { return distanciaMaximaKm; }
+    public void setDistanciaMaximaKm(Integer distanciaMaximaKm) { this.distanciaMaximaKm = distanciaMaximaKm; }
 }

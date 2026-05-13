@@ -2,96 +2,78 @@
   <app-header></app-header>
 
   <div class="sugestoes-content">
-    <!-- Loading -->
     <div class="loading-container" *ngIf="loading">
       <div class="spinner"></div>
       <p>Carregando perfis...</p>
     </div>
 
-    <!-- Error -->
     <div class="error-container" *ngIf="errorMessage && !loading">
       <p>{{ errorMessage }}</p>
       <button class="btn-retry" (click)="recarregar()">Tentar novamente</button>
     </div>
 
-    <!-- Sem sugestões -->
-    <div class="empty-container" *ngIf="!loading && !errorMessage && sugestoes.length === 0">
-      <div class="empty-icon">🎲</div>
-      <h3>Nenhuma sugestão no momento</h3>
-      <p>Volte mais tarde para novos matches!</p>
-      <button class="btn-retry" (click)="recarregar()">Atualizar</button>
-    </div>
+    <div *ngIf="!loading && !errorMessage">
+      <div *ngIf="sugestoes.length > 0 && currentCard">
+        <div class="status-badge">
+          <span class="online-dot"></span>
+          ATIVO AGORA
+        </div>
 
-    <!-- Cards -->
-    <div class="cards-container" *ngIf="!loading && !errorMessage && sugestoes.length > 0">
-      <!-- Badge de status -->
-      <div class="status-badge" *ngIf="currentCard">
-        <span class="online-dot"></span>
-        ATIVO AGORA
-      </div>
+        <div class="card" [class.animate-out]="animating">
+          <div class="card-bg" *ngIf="getFotoUrl(currentCard)" [style.backgroundImage]="'url(' + getFotoUrl(currentCard) + ')'"></div>
+          <div class="card-bg card-bg-gradient" *ngIf="!getFotoUrl(currentCard)"></div>
+          <div class="card-overlay"></div>
 
-      <!-- Card Principal -->
-      <div class="card" [class.animate-out]="animating">
-        <!-- Imagem de fundo do card -->
-        <div class="card-bg" *ngIf="getFotoUrl(currentCard)" [style.backgroundImage]="'url(' + getFotoUrl(currentCard) + ')'"></div>
-        <div class="card-bg card-bg-gradient" *ngIf="!getFotoUrl(currentCard)"></div>
+          <div class="card-content">
+            <div class="card-header">
+              <div class="level-badge">LVL {{ getNivelAleatorio(currentCard.id) }}</div>
+            </div>
 
-        <!-- Overlay escuro para contraste -->
-        <div class="card-overlay"></div>
+            <div class="card-info">
+              <h2>{{ currentCard.nome }}, {{ getIdadeAleatoria(currentCard.id) }}</h2>
+              <p class="distance">📍 À {{ getDistanciaAleatoria(currentCard.id) }}km de você</p>
+            </div>
 
-        <!-- Conteúdo do card -->
-        <div class="card-content" *ngIf="currentCard">
-          <div class="card-header">
-            <div class="level-badge">
-              LVL {{ getNivelAleatorio(currentCard.id) }}
+            <div class="tags">
+              <span class="tag" *ngFor="let tag of getTags(currentCard)">{{ tag }}</span>
+            </div>
+
+            <div class="description">
+              <p>{{ currentCard.descricao || 'Procuro pessoas para jogar e se divertir. Vamos formar um time?' }}</p>
             </div>
           </div>
-
-          <div class="card-info">
-            <h2>{{ currentCard.nome }}, {{ getIdadeAleatoria(currentCard.id) }}</h2>
-            <p class="distance">📍 À {{ getDistanciaAleatoria(currentCard.id) }}km de você</p>
-          </div>
-
-          <div class="tags">
-            <span class="tag" *ngFor="let tag of getTags(currentCard)">
-              {{ tag }}
-            </span>
-          </div>
-
-          <div class="description">
-            <p>{{ currentCard.descricao || 'Procuro pessoas para jogar e se divertir. Vamos formar um time?' }}</p>
-          </div>
         </div>
-      </div>
 
-      <!-- Botões de Ação -->
-      <div class="action-buttons" *ngIf="currentCard">
-        <button class="btn-passar" (click)="passar()">
-          ✖ Passar
-        </button>
-        <button class="btn-chat" (click)="solicitarChat()">
-          💬 Solicitar chat
-        </button>
-      </div>
+        <div class="action-buttons">
+          <button class="btn-passar" (click)="passar()">✖ Passar</button>
+          <button class="btn-chat" (click)="solicitarChat()">💬 Solicitar chat</button>
+        </div>
 
-      <!-- Cards Online Recentemente -->
-      <div class="recent-section" *ngIf="sugestoes.length > 1">
-        <h3>ONLINE RECENTEMENTE</h3>
-        <div class="recent-cards">
-          <div class="recent-card" *ngFor="let jogador of sugestoes.slice(1, 4)">
-            <div class="recent-avatar">
-              <img *ngIf="getFotoUrl(jogador)" [src]="getFotoUrl(jogador)" alt="Foto">
-              <div *ngIf="!getFotoUrl(jogador)" class="recent-avatar-initials">
-                {{ jogador.nome?.charAt(0) || 'U' }}{{ jogador.nome?.charAt(1) || '' }}
+        <div class="recent-section" *ngIf="sugestoes.length > 1">
+          <h3>ONLINE RECENTEMENTE</h3>
+          <div class="recent-cards">
+            <div class="recent-card" *ngFor="let jogador of sugestoes.slice(1, 4)">
+              <div class="recent-avatar">
+                <img *ngIf="getFotoUrl(jogador)" [src]="getFotoUrl(jogador)" alt="Foto">
+                <div *ngIf="!getFotoUrl(jogador)" class="recent-avatar-initials">
+                  {{ jogador.nome?.charAt(0) || 'U' }}{{ jogador.nome?.charAt(1) || '' }}
+                </div>
+              </div>
+              <div class="recent-info">
+                <div class="recent-name">{{ jogador.nome }}, {{ getIdadeAleatoria(jogador.id) }}</div>
+                <div class="recent-distance">📍 À {{ getDistanciaAleatoria(jogador.id) }}km de você</div>
+                <div class="recent-level">LVL {{ getNivelAleatorio(jogador.id) }}</div>
               </div>
             </div>
-            <div class="recent-info">
-              <div class="recent-name">{{ jogador.nome }}, {{ getIdadeAleatoria(jogador.id) }}</div>
-              <div class="recent-distance">📍 À {{ getDistanciaAleatoria(jogador.id) }}km de você</div>
-              <div class="recent-level">LVL {{ getNivelAleatorio(jogador.id) }}</div>
-            </div>
           </div>
         </div>
+      </div>
+
+      <div class="no-more-cards" *ngIf="sugestoes.length === 0 || !currentCard">
+        <div class="empty-icon">🎲</div>
+        <h3>Sem perfis que combinem com você por enquanto</h3>
+        <p>Tente novamente mais tarde ou ajuste suas preferências.</p>
+        <button class="btn-retry" (click)="recarregar()">Atualizar sugestões</button>
       </div>
     </div>
   </div>

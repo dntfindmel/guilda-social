@@ -13,7 +13,6 @@ public class MatchmakingService {
 
     private final UsuarioRepository usuarioRepository;
     private final MatchRepository matchRepository;
-    private static final double RAIO_MAXIMO_KM = 20.0;
 
     public MatchmakingService(UsuarioRepository usuarioRepository, MatchRepository matchRepository) {
         this.usuarioRepository = usuarioRepository;
@@ -24,23 +23,50 @@ public class MatchmakingService {
         Usuario usuarioAtual = usuarioRepository.findById(usuarioId).orElse(null);
         if (usuarioAtual == null) return List.of();
 
-        // Buscar todos os usuários ativos (excluindo o próprio)
+        int raioMaximo = usuarioAtual.getDistanciaMaximaKm() != null ? usuarioAtual.getDistanciaMaximaKm() : 20;
+
         List<Usuario> todosUsuarios = usuarioRepository.findAllAtivos(usuarioId);
 
-        return todosUsuarios.stream()
-            // Filtrar por distância (até 20km)
-            .filter(u -> calcularDistancia(usuarioAtual, u) <= RAIO_MAXIMO_KM)
-            // Excluir se o usuário atual já enviou solicitação (PENDENTE)
-            .filter(u -> !matchRepository.existeSolicitacaoEnviada(usuarioId, u.getId()))
-            // Excluir se o usuário atual já passou
-            .filter(u -> !matchRepository.existePassado(usuarioId, u.getId()))
-            // Excluir se já são amigos (ACEITO)
-            .filter(u -> !matchRepository.existeMatchAceito(usuarioId, u.getId()))
+        System.out.println("=== MatchmakingService.getSugestoes ===");
+        System.out.println("Usuário: " + usuarioAtual.getNome());
+        System.out.println("Raio máximo: " + raioMaximo + "km");
+        System.out.println("Total de usuários ativos: " + todosUsuarios.size());
+
+        List<Usuario> sugestoes = todosUsuarios.stream()
+            .filter(u -> !u.getId().equals(usuarioId))
+            .filter(u -> {
+                boolean passado = matchRepository.existeMatchPassado(usuarioId, u.getId());
+                if (passado) System.out.println("  - " + u.getNome() + ": PASSADO");
+                return !passado;
+            })
+            .filter(u -> {
+                boolean solicitado = matchRepository.existeSolicitacaoEnviada(usuarioId, u.getId());
+                if (solicitado) System.out.println("  - " + u.getNome() + ": SOLICITAÇÃO ENVIADA");
+                return !solicitado;
+            })
+            .filter(u -> {
+                boolean aceito = matchRepository.existeMatchAceito(usuarioId, u.getId());
+                if (aceito) System.out.println("  - " + u.getNome() + ": JÁ É MATCH ACEITO");
+                return !aceito;
+            })
+            .filter(u -> {
+                double distancia = calcularDistancia(usuarioAtual, u);
+                boolean dentroRaio = distancia <= raioMaximo;
+                if (!dentroRaio) System.out.println("  - " + u.getNome() + ": FORA DO RAIO (" + String.format("%.2f", distancia) + "km)");
+                return dentroRaio;
+            })
             .collect(Collectors.toList());
+
+        System.out.println("Total de sugestões: " + sugestoes.size());
+        for (Usuario u : sugestoes) {
+            System.out.println("  ✅ " + u.getNome() + " - " + u.getCidade() + "/" + u.getEstado());
+        }
+
+        return sugestoes;
     }
 
     private double calcularDistancia(Usuario u1, Usuario u2) {
-        if (u1.getLatitude() == null || u2.getLatitude() == null) return RAIO_MAXIMO_KM + 1;
+        if (u1.getLatitude() == null || u2.getLatitude() == null) return 100;
 
         double lat1 = u1.getLatitude();
         double lon1 = u1.getLongitude();
@@ -53,7 +79,7 @@ public class MatchmakingService {
         dist = Math.acos(dist);
         dist = Math.toDegrees(dist);
         dist = dist * 60 * 1.1515;
-        dist = dist * 1.609344; // Km
+        dist = dist * 1.609344;
 
         return dist;
     }

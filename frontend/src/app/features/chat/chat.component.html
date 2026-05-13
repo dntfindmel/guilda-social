@@ -9,19 +9,16 @@
       <button class="btn-refresh" (click)="carregarMatches()" [disabled]="loading">🔄</button>
     </div>
 
-    <!-- Loading -->
     <div class="loading-container" *ngIf="loading">
       <div class="spinner"></div>
       <p>Carregando conversas...</p>
     </div>
 
-    <!-- Error -->
     <div class="error-container" *ngIf="errorMessage && !loading">
       <p>{{ errorMessage }}</p>
       <button class="btn-retry" (click)="carregarMatches()">Tentar novamente</button>
     </div>
 
-    <!-- Empty -->
     <div class="empty-container" *ngIf="!loading && !errorMessage && matches.length === 0">
       <div class="empty-icon">💬</div>
       <h3>Nenhuma conversa ainda</h3>
@@ -29,7 +26,6 @@
       <button class="btn-encontrar" routerLink="/sugestoes">Encontrar jogadores</button>
     </div>
 
-    <!-- Lista de conversas -->
     <div class="matches-list" *ngIf="!loading && !errorMessage && matches.length > 0">
       <div
         *ngFor="let match of matches"
@@ -37,13 +33,11 @@
         [class.sem-resposta]="getStatusChat(match).destaque"
         [routerLink]="['/chat/detalhe', match.id]"
       >
-        <!-- Avatar com foto -->
         <div class="avatar">
           <img *ngIf="getFotoAmigo(match)" [src]="getFotoAmigo(match)" alt="Foto">
           <span *ngIf="!getFotoAmigo(match)">{{ getNomeAmigo(match).charAt(0).toUpperCase() }}</span>
         </div>
 
-        <!-- Informações -->
         <div class="info">
           <div class="info-header">
             <strong>{{ getNomeAmigo(match) }}</strong>

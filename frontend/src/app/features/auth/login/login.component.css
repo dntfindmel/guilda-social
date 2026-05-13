@@ -135,3 +135,47 @@
 .register-link a:hover {
   text-decoration: underline;
 }
+
+.links {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.link-esqueci {
+  color: #F4C025;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.link-esqueci:hover {
+  color: #E0AC00;
+}
+
+.success-message {
+  background: #E8F5E9;
+  color: #2E7D32;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.btn-voltar {
+  width: 100%;
+  padding: 12px;
+  background: #F1F5F9;
+  color: #64748B;
+  border: none;
+  border-radius: 40px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+small {
+  display: block;
+  color: #64748B;
+  font-size: 0.7rem;
+  margin-top: 4px;
+}

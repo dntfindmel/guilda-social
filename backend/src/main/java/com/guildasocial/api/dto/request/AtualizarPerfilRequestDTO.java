@@ -16,9 +16,9 @@ public class AtualizarPerfilRequestDTO {
 
     private String cidade;
     private String estado;
-    private String fotoPerfil;  
+    private String fotoPerfil;
+    private Integer distanciaMaximaKm;  
 
-    // Getters e Setters
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
 
@@ -36,4 +36,7 @@ public class AtualizarPerfilRequestDTO {
 
     public String getFotoPerfil() { return fotoPerfil; }
     public void setFotoPerfil(String fotoPerfil) { this.fotoPerfil = fotoPerfil; }
+
+    public Integer getDistanciaMaximaKm() { return distanciaMaximaKm; }
+    public void setDistanciaMaximaKm(Integer distanciaMaximaKm) { this.distanciaMaximaKm = distanciaMaximaKm; }
 }

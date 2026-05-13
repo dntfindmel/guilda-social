@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { PerfilService } from '../../../core/services/perfil.service';
@@ -10,7 +10,7 @@ import { HeaderComponent } from '../../../layout/header/header.component';
 @Component({
   selector: 'app-editar-perfil',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, HeaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, HeaderComponent],
   templateUrl: './editar-perfil.component.html',
   styleUrls: ['./editar-perfil.component.css']
 })
@@ -21,32 +21,48 @@ export class EditarPerfilComponent implements OnInit {
   private authService = inject(AuthService);
   private perfilService = inject(PerfilService);
 
-  perfilForm: FormGroup;
+  // Formulário único contendo todos os campos, incluindo senha
+  editForm: FormGroup;
   loading = true;
   saving = false;
   errorMessage = '';
   successMessage = '';
   fotoPreview: string | undefined;
   fotoFile: File | null = null;
+  distanciaMaxima: number = 20;
   estados = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
 
   constructor() {
-    this.perfilForm = this.fb.group({
+    this.editForm = this.fb.group({
+      // Informações do perfil
       nome: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       telefone: ['', [Validators.pattern(/^\(?[1-9]{2}\)? ?(?:[2-8]|9[1-9])[0-9]{3}-?[0-9]{4}$/)]],
       cidade: ['', Validators.required],
       estado: ['', Validators.required],
-      descricao: ['', [Validators.maxLength(500)]]
-    });
+      descricao: ['', [Validators.maxLength(500)]],
+      distanciaMaximaKm: [20, [Validators.min(1), Validators.max(100)]],
+      // Campos de senha
+      senhaAtual: [''],
+      novaSenha: ['', [Validators.minLength(6)]],
+      confirmarNovaSenha: ['']
+    }, { validators: this.checkSenhas });
   }
 
   ngOnInit(): void {
     this.carregarPerfil();
   }
 
+  checkSenhas(group: FormGroup): any {
+    const novaSenha = group.get('novaSenha')?.value;
+    const confirmar = group.get('confirmarNovaSenha')?.value;
+    if (novaSenha && confirmar && novaSenha !== confirmar) {
+      return { senhasDiferentes: true };
+    }
+    return null;
+  }
+
   carregarPerfil(): void {
     const usuarioId = this.authService.getUsuarioId();
-
     if (!usuarioId) {
       this.router.navigate(['/login']);
       return;
@@ -54,31 +70,36 @@ export class EditarPerfilComponent implements OnInit {
 
     this.perfilService.buscarPerfil(usuarioId).subscribe({
       next: (data) => {
-        this.perfilForm.patchValue({
+        this.editForm.patchValue({
           nome: data.nome,
           telefone: data.telefone || '',
           cidade: data.cidade,
           estado: data.estado,
-          descricao: data.descricao || ''
+          descricao: data.descricao || '',
+          distanciaMaximaKm: data.distanciaMaximaKm || 20
         });
+        this.distanciaMaxima = data.distanciaMaximaKm || 20;
         if (data.fotoPerfil && !data.fotoPerfil.startsWith('data:')) {
           this.fotoPreview = `http://localhost:8080${data.fotoPerfil}`;
         }
         this.loading = false;
       },
       error: (error) => {
-        console.error('Erro ao carregar perfil:', error);
+        console.error('Erro:', error);
         this.errorMessage = 'Erro ao carregar perfil';
         this.loading = false;
       }
     });
   }
 
+  onDistanciaChange(event: any): void {
+    this.distanciaMaxima = event.target.value;
+  }
+
   onFotoSelecionada(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       this.fotoFile = input.files[0];
-      // Preview imediato
       const reader = new FileReader();
       reader.onload = (e) => {
         this.fotoPreview = e.target?.result as string;
@@ -87,27 +108,33 @@ export class EditarPerfilComponent implements OnInit {
     }
   }
 
-  uploadFoto(): void {
-    const usuarioId = this.authService.getUsuarioId();
-    if (!usuarioId || !this.fotoFile) return;
-
-    const formData = new FormData();
-    formData.append('file', this.fotoFile);
-
-    this.http.post<{ fotoUrl: string; message: string }>(
-      `http://localhost:8080/api/upload/foto/${usuarioId}`,
-      formData
-    ).subscribe({
-      next: (response) => {
-        this.successMessage = response.message;
-        this.fotoPreview = `http://localhost:8080${response.fotoUrl}`;
-        setTimeout(() => { this.successMessage = ''; }, 3000);
-      },
-      error: (error) => {
-        console.error('Erro ao fazer upload:', error);
-        this.errorMessage = 'Erro ao fazer upload da foto';
-        setTimeout(() => { this.errorMessage = ''; }, 3000);
+  uploadFoto(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.fotoFile) {
+        resolve();
+        return;
       }
+
+      const usuarioId = this.authService.getUsuarioId();
+      if (!usuarioId) {
+        resolve();
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', this.fotoFile);
+
+      this.http.post<{ fotoUrl: string }>(`http://localhost:8080/api/upload/foto/${usuarioId}`, formData)
+        .subscribe({
+          next: () => {
+            console.log('Foto enviada com sucesso');
+            resolve();
+          },
+          error: (error) => {
+            console.error('Erro ao enviar foto:', error);
+            reject(error);
+          }
+        });
     });
   }
 
@@ -116,22 +143,21 @@ export class EditarPerfilComponent implements OnInit {
     if (!usuarioId) return;
 
     this.http.delete<{ message: string }>(`http://localhost:8080/api/upload/foto/${usuarioId}`).subscribe({
-      next: (response) => {
+      next: () => {
         this.fotoPreview = undefined;
         this.fotoFile = null;
-        this.successMessage = response.message;
+        this.successMessage = 'Foto removida com sucesso';
         setTimeout(() => { this.successMessage = ''; }, 3000);
       },
       error: (error) => {
-        console.error('Erro ao remover foto:', error);
+        console.error('Erro:', error);
         this.errorMessage = 'Erro ao remover foto';
-        setTimeout(() => { this.errorMessage = ''; }, 3000);
       }
     });
   }
 
-  salvar(): void {
-    if (this.perfilForm.valid) {
+  async salvar(): Promise<void> {
+    if (this.editForm.valid) {
       this.saving = true;
       this.errorMessage = '';
       this.successMessage = '';
@@ -142,61 +168,65 @@ export class EditarPerfilComponent implements OnInit {
         return;
       }
 
-      const dados: any = {};
-      const nome = this.perfilForm.get('nome')?.value;
-      if (nome) dados.nome = nome;
+      // Preparar dados do perfil
+      const dados: any = {
+        nome: this.editForm.get('nome')?.value,
+        telefone: this.editForm.get('telefone')?.value || null,
+        cidade: this.editForm.get('cidade')?.value,
+        estado: this.editForm.get('estado')?.value,
+        descricao: this.editForm.get('descricao')?.value || null,
+        distanciaMaximaKm: this.editForm.get('distanciaMaximaKm')?.value
+      };
 
-      const telefone = this.perfilForm.get('telefone')?.value;
-      if (telefone) dados.telefone = telefone;
+      // Verificar se há alteração de senha
+      const senhaAtual = this.editForm.get('senhaAtual')?.value;
+      const novaSenha = this.editForm.get('novaSenha')?.value;
+      const temAlteracaoSenha = senhaAtual && novaSenha && novaSenha.length >= 6;
 
-      const cidade = this.perfilForm.get('cidade')?.value;
-      if (cidade) dados.cidade = cidade;
+      try {
+        // 1. Salvar dados do perfil
+        await this.perfilService.atualizarPerfil(usuarioId, dados).toPromise();
 
-      const estado = this.perfilForm.get('estado')?.value;
-      if (estado) dados.estado = estado;
-
-      const descricao = this.perfilForm.get('descricao')?.value;
-      if (descricao) dados.descricao = descricao;
-
-      // Primeiro salva os dados do perfil
-      this.perfilService.atualizarPerfil(usuarioId, dados).subscribe({
-        next: () => {
-          // Depois, se tiver foto, faz upload
-          if (this.fotoFile) {
-            this.uploadFoto();
-          }
-
-          this.saving = false;
-          this.successMessage = 'Perfil atualizado com sucesso!';
-
-          if (dados.nome) {
-            localStorage.setItem('usuarioNome', dados.nome);
-          }
-
-          setTimeout(() => {
-            this.router.navigate(['/perfil']);
-          }, 1500);
-        },
-        error: (error) => {
-          this.saving = false;
-          this.errorMessage = error.error?.message || 'Erro ao salvar perfil';
+        // 2. Se tiver foto, fazer upload
+        if (this.fotoFile) {
+          await this.uploadFoto();
         }
-      });
-    } else {
-      this.markFormGroupTouched(this.perfilForm);
+
+        // 3. Se tiver alteração de senha
+        if (temAlteracaoSenha) {
+          await this.http.post(`http://localhost:8080/api/auth/alterar-senha/${usuarioId}`, {
+            senhaAntiga: senhaAtual,
+            novaSenha: novaSenha
+          }).toPromise();
+          this.successMessage = 'Perfil e senha atualizados com sucesso!';
+          // Limpar campos de senha após alteração
+          this.editForm.patchValue({
+            senhaAtual: '',
+            novaSenha: '',
+            confirmarNovaSenha: ''
+          });
+        } else {
+          this.successMessage = 'Perfil atualizado com sucesso!';
+        }
+
+        if (dados.nome) {
+          localStorage.setItem('usuarioNome', dados.nome);
+        }
+
+        setTimeout(() => {
+          this.router.navigate(['/perfil']);
+        }, 2000);
+
+      } catch (error: any) {
+        this.saving = false;
+        this.errorMessage = error.error?.message || 'Erro ao salvar alterações';
+      } finally {
+        this.saving = false;
+      }
     }
   }
 
   cancelar(): void {
     this.router.navigate(['/perfil']);
-  }
-
-  private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.values(formGroup.controls).forEach(control => {
-      control.markAsTouched();
-      if (control instanceof FormGroup) {
-        this.markFormGroupTouched(control);
-      }
-    });
   }
 }

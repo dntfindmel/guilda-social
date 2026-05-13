@@ -14,8 +14,8 @@ public class PerfilResponseDTO {
     private String fotoPerfil;
     private LocalDateTime dataCadastro;
     private Boolean ativo;
+    private Integer distanciaMaximaKm;
 
-    // Getters e Setters
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
 
@@ -45,4 +45,7 @@ public class PerfilResponseDTO {
 
     public Boolean getAtivo() { return ativo; }
     public void setAtivo(Boolean ativo) { this.ativo = ativo; }
+
+    public Integer getDistanciaMaximaKm() { return distanciaMaximaKm; }
+    public void setDistanciaMaximaKm(Integer distanciaMaximaKm) { this.distanciaMaximaKm = distanciaMaximaKm; }
 }

@@ -10,7 +10,6 @@
     </div>
 
     <form [formGroup]="cadastroForm" (ngSubmit)="cadastrar()">
-      <!-- Foto de Perfil -->
       <div class="foto-section">
         <div class="foto-label">FOTO DE PERFIL</div>
         <div class="foto-placeholder" (click)="selecionarFoto()">
@@ -29,7 +28,6 @@
 
       <div class="divider"></div>
 
-      <!-- Informações pessoais -->
       <h2>Informações pessoais</h2>
 
       <div class="form-group">
@@ -37,7 +35,7 @@
         <input type="text" formControlName="nome" placeholder="Digite seu nome"
           [class.invalid]="cadastroForm.get('nome')?.invalid && cadastroForm.get('nome')?.touched">
         <div class="error" *ngIf="cadastroForm.get('nome')?.invalid && cadastroForm.get('nome')?.touched">
-          Nome é obrigatório
+          Nome é obrigatório (mínimo 3 caracteres)
         </div>
       </div>
 
@@ -47,16 +45,19 @@
           <input type="date" formControlName="dataNascimento"
             [class.invalid]="cadastroForm.get('dataNascimento')?.invalid && cadastroForm.get('dataNascimento')?.touched">
           <div class="error" *ngIf="cadastroForm.get('dataNascimento')?.invalid && cadastroForm.get('dataNascimento')?.touched">
-            Data de nascimento inválida (mínimo 13 anos)
+            <span *ngIf="cadastroForm.get('dataNascimento')?.errors?.['required']">Data obrigatória</span>
+            <span *ngIf="cadastroForm.get('dataNascimento')?.errors?.['menorIdade']">
+              Você deve ter pelo menos 18 anos para se cadastrar.
+            </span>
           </div>
         </div>
         <div class="form-group col">
           <label>Telefone</label>
-          <input type="tel" formControlName="telefone" placeholder="(11) 99999-9999">
+          <input type="tel" formControlName="telefone" placeholder="11999999999"
+            inputmode="numeric" maxlength="11">
         </div>
       </div>
 
-      <!-- Localização Automática (oculta, apenas para exibir) -->
       <div class="location-info" *ngIf="cidadeAtual">
         <div class="info-card">
           <span class="location-icon">📍</span>
@@ -82,6 +83,9 @@
           <label>Senha *</label>
           <input type="password" formControlName="senha" placeholder="******"
             [class.invalid]="cadastroForm.get('senha')?.invalid && cadastroForm.get('senha')?.touched">
+          <div class="error" *ngIf="cadastroForm.get('senha')?.invalid && cadastroForm.get('senha')?.touched">
+            Mínimo 6 caracteres
+          </div>
         </div>
       </div>
 
@@ -96,7 +100,6 @@
 
       <div class="divider"></div>
 
-      <!-- Sobre você -->
       <h2>Sobre você</h2>
       <div class="form-group">
         <textarea formControlName="descricao" rows="4"
@@ -105,7 +108,6 @@
 
       <div class="divider"></div>
 
-      <!-- Interesses -->
       <h2>Interesses</h2>
       <p class="subtitulo">Quais tipos de jogos está procurando?</p>
 
@@ -131,16 +133,17 @@
 
       <div class="divider"></div>
 
-      <!-- Termos -->
       <div class="termos">
         <label class="termos-checkbox">
           <input type="checkbox" formControlName="aceitaTermos">
           <span class="checkmark"></span>
           <span class="termos-text">Ao se inscrever, concorda com os <a href="#">termos</a>.</span>
         </label>
+        <div class="error" *ngIf="cadastroForm.get('aceitaTermos')?.invalid && cadastroForm.get('aceitaTermos')?.touched">
+          Você precisa aceitar os termos para continuar.
+        </div>
       </div>
 
-      <!-- Botão -->
       <button type="submit" class="btn-finalizar" [disabled]="loading || carregandoLocalizacao">
         <span *ngIf="!loading">Finalizar cadastro</span>
         <span *ngIf="loading" class="loading-spinner"></span>

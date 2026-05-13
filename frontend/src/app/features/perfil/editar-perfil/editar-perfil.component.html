@@ -13,16 +13,12 @@
         <p>Carregando...</p>
       </div>
 
-      <div *ngIf="!loading" class="form-container">
-        <!-- Mensagens -->
-        <div *ngIf="successMessage" class="success-message">
-          ✅ {{ successMessage }}
-        </div>
-        <div *ngIf="errorMessage" class="error-message">
-          ❌ {{ errorMessage }}
-        </div>
+      <div *ngIf="!loading">
+        <div *ngIf="successMessage" class="success-message">✅ {{ successMessage }}</div>
+        <div *ngIf="errorMessage" class="error-message">❌ {{ errorMessage }}</div>
 
-        <form [formGroup]="perfilForm" (ngSubmit)="salvar()">
+        <form [formGroup]="editForm">
+          <!-- Foto -->
           <div class="foto-section">
             <div class="foto-label">FOTO DE PERFIL</div>
             <div class="foto-container">
@@ -37,50 +33,40 @@
               <input type="file" #fileInput (change)="onFotoSelecionada($event)" accept="image/*" style="display: none">
               <div class="foto-actions">
                 <button type="button" class="btn-escolher" (click)="fileInput.click()">Escolher foto</button>
-                <button type="button" class="btn-remover" (click)="removerFoto()" *ngIf="fotoPreview">Remover foto</button>
+                <button type="button" class="btn-remover" (click)="removerFoto()" *ngIf="fotoPreview">Remover</button>
               </div>
             </div>
           </div>
 
-          <div class="divider"></div>
-
           <!-- Informações Pessoais -->
-          <h2>Informações Pessoais</h2>
-
           <div class="form-group">
             <label>Nome completo *</label>
-            <input type="text" formControlName="nome" placeholder="Digite seu nome"
-              [class.invalid]="perfilForm.get('nome')?.invalid && perfilForm.get('nome')?.touched">
-            <div class="error" *ngIf="perfilForm.get('nome')?.invalid && perfilForm.get('nome')?.touched">
-              Nome é obrigatório (mínimo 3 caracteres)
-            </div>
+            <input type="text" formControlName="nome" placeholder="Digite seu nome">
           </div>
 
           <div class="form-group">
             <label>Telefone</label>
-            <input
-              type="tel"
-              formControlName="telefone"
-              placeholder="11999999999"
-              inputmode="numeric"
-              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-              maxlength="11">
+            <input type="tel" formControlName="telefone" placeholder="(11) 99999-9999">
           </div>
 
           <div class="row">
             <div class="form-group col">
               <label>Cidade *</label>
-              <input type="text" formControlName="cidade" placeholder="Sua cidade"
-                [class.invalid]="perfilForm.get('cidade')?.invalid && perfilForm.get('cidade')?.touched">
+              <input type="text" formControlName="cidade" placeholder="Sua cidade">
             </div>
             <div class="form-group col">
               <label>Estado *</label>
-              <select formControlName="estado"
-                [class.invalid]="perfilForm.get('estado')?.invalid && perfilForm.get('estado')?.touched">
+              <select formControlName="estado">
                 <option value="">Selecione</option>
                 <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
               </select>
             </div>
+          </div>
+
+          <!-- Distância -->
+          <div class="form-group">
+            <label>Distância máxima para matches: {{ editForm.get('distanciaMaximaKm')?.value }} km</label>
+            <input type="range" formControlName="distanciaMaximaKm" min="1" max="100" step="1" (input)="onDistanciaChange($event)">
           </div>
 
           <div class="divider"></div>
@@ -88,18 +74,40 @@
           <!-- Sobre Você -->
           <h2>Sobre Você</h2>
           <div class="form-group">
-            <textarea formControlName="descricao" rows="4"
-              placeholder="Conte sobre suas histórias épicas e seus gostos pessoais"></textarea>
-            <div class="contador" *ngIf="perfilForm.get('descricao')?.value">
-              {{ perfilForm.get('descricao')?.value.length }}/500
+            <textarea formControlName="descricao" rows="4" placeholder="Conte sobre suas histórias épicas..."></textarea>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Alterar Senha -->
+          <h2>Alterar Senha</h2>
+          <p class="senha-info">Preencha apenas se quiser alterar sua senha</p>
+
+          <div class="form-group">
+            <label>Senha atual</label>
+            <input type="password" formControlName="senhaAtual" placeholder="Digite sua senha atual">
+          </div>
+
+          <div class="row">
+            <div class="form-group col">
+              <label>Nova senha</label>
+              <input type="password" formControlName="novaSenha" placeholder="Mínimo 6 caracteres">
             </div>
+            <div class="form-group col">
+              <label>Confirmar nova senha</label>
+              <input type="password" formControlName="confirmarNovaSenha" placeholder="Confirme a nova senha">
+            </div>
+          </div>
+
+          <div class="error" *ngIf="editForm.errors?.['senhasDiferentes'] && editForm.get('confirmarNovaSenha')?.touched">
+            As senhas não conferem
           </div>
 
           <!-- Botões -->
           <div class="form-actions">
             <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
-            <button type="submit" class="btn-salvar" [disabled]="saving">
-              <span *ngIf="!saving">💾 Salvar alterações</span>
+            <button type="button" class="btn-salvar" (click)="salvar()" [disabled]="saving">
+              <span *ngIf="!saving">💾 Salvar todas as alterações</span>
               <span *ngIf="saving" class="loading-spinner"></span>
             </button>
           </div>

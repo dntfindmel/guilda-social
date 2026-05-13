@@ -31,6 +31,8 @@ export class CadastroComponent implements OnInit {
   cidadeAtual: string = '';
   estadoAtual: string = '';
 
+  estados = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
+
   constructor() {
     this.cadastroForm = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
@@ -45,9 +47,7 @@ export class CadastroComponent implements OnInit {
       interesseRPG: [false],
       aceitaTermos: [false, Validators.requiredTrue],
       latitude: [null],
-      longitude: [null],
-      cidade: [{ value: '', disabled: true }],
-      estado: [{ value: '', disabled: true }]
+      longitude: [null]
     }, { validators: this.checkSenhas });
   }
 
@@ -73,7 +73,7 @@ export class CadastroComponent implements OnInit {
       idade--;
     }
 
-    return idade >= 13 ? null : { menorIdade: true };
+    return idade >= 18 ? null : { menorIdade: true };
   }
 
   obterLocalizacao(): void {
@@ -83,9 +83,7 @@ export class CadastroComponent implements OnInit {
       next: (location) => {
         this.cadastroForm.patchValue({
           latitude: location.lat,
-          longitude: location.lng,
-          cidade: location.cidade,
-          estado: location.estado
+          longitude: location.lng
         });
         this.cidadeAtual = location.cidade;
         this.estadoAtual = location.estado;
@@ -94,7 +92,6 @@ export class CadastroComponent implements OnInit {
       error: (error) => {
         console.error('Erro ao obter localização:', error);
         this.carregandoLocalizacao = false;
-        this.errorMessage = 'Não foi possível detectar sua localização. Verifique as permissões do navegador.';
       }
     });
   }
@@ -115,20 +112,31 @@ export class CadastroComponent implements OnInit {
     }
   }
 
-  uploadFoto(usuarioId: string): void {
-    if (!this.fotoFile) return;
+  uploadFoto(usuarioId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.fotoFile) {
+        resolve();
+        return;
+      }
 
-    const formData = new FormData();
-    formData.append('file', this.fotoFile);
+      const formData = new FormData();
+      formData.append('file', this.fotoFile);
 
-    this.http.post<{ fotoUrl: string }>(`http://localhost:8080/api/upload/foto/${usuarioId}`, formData)
-      .subscribe({
-        next: () => console.log('Foto enviada'),
-        error: (error) => console.error('Erro ao enviar foto:', error)
-      });
+      this.http.post<{ fotoUrl: string }>(`http://localhost:8080/api/upload/foto/${usuarioId}`, formData)
+        .subscribe({
+          next: () => {
+            console.log('Foto enviada com sucesso');
+            resolve();
+          },
+          error: (error) => {
+            console.error('Erro ao enviar foto:', error);
+            reject(error);
+          }
+        });
+    });
   }
 
-  cadastrar(): void {
+  async cadastrar(): Promise<void> {
     if (this.cadastroForm.valid) {
       this.loading = true;
       this.errorMessage = '';
@@ -142,21 +150,21 @@ export class CadastroComponent implements OnInit {
         nome: this.cadastroForm.get('nome')?.value,
         email: this.cadastroForm.get('email')?.value,
         dataNascimento: this.cadastroForm.get('dataNascimento')?.value,
+        cidade: this.cidadeAtual,
+        estado: this.estadoAtual,
         telefone: this.cadastroForm.get('telefone')?.value || undefined,
         descricao: this.cadastroForm.get('descricao')?.value || undefined,
         interesses: interesses.length > 0 ? interesses : undefined,
         latitude: this.cadastroForm.get('latitude')?.value,
-        longitude: this.cadastroForm.get('longitude')?.value,
-        cidade: this.cidadeAtual,
-        estado: this.estadoAtual
+        longitude: this.cadastroForm.get('longitude')?.value
       };
 
       const senha = this.cadastroForm.get('senha')?.value;
 
       this.usuarioService.criarUsuario(usuarioData, senha).subscribe({
-        next: (usuario) => {
+        next: async (usuario) => {
           if (this.fotoFile && usuario.id) {
-            this.uploadFoto(usuario.id);
+            await this.uploadFoto(usuario.id);
           }
 
           this.loading = false;
@@ -171,10 +179,6 @@ export class CadastroComponent implements OnInit {
       });
     } else {
       this.markFormGroupTouched(this.cadastroForm);
-
-      if (!this.cadastroForm.get('aceitaTermos')?.value) {
-        this.errorMessage = 'Você precisa aceitar os termos para continuar.';
-      }
     }
   }
 

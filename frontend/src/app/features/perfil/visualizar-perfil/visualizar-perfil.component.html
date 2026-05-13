@@ -2,17 +2,14 @@
 
   <div class="perfil-content">
     <div class="perfil-card" *ngIf="!loading && !errorMessage && perfil">
-
-      <!-- Cabeçalho -->
       <div class="card-header">
         <button class="btn-back" (click)="voltar()">← Voltar</button>
         <h1>Meu Perfil</h1>
         <div class="placeholder"></div>
       </div>
 
-      <!-- Avatar -->
       <div class="avatar-section">
-        <div class="avatar" [style.backgroundColor]="'#F4C025'">
+        <div class="avatar">
           <img *ngIf="perfil.fotoPerfil" [src]="getFotoUrl()" alt="Foto">
           <span *ngIf="!perfil.fotoPerfil" class="avatar-initials">{{ getInitials() }}</span>
         </div>
@@ -21,7 +18,6 @@
 
       <div class="divider"></div>
 
-      <!-- Informações -->
       <div class="info-item">
         <div class="label">📧 E-mail</div>
         <div class="value">{{ perfil.email }}</div>
@@ -37,9 +33,13 @@
         <div class="value">{{ perfil.cidade }}/{{ perfil.estado }}</div>
       </div>
 
+      <div class="info-item">
+        <div class="label">🌍 Raio de busca</div>
+        <div class="value">{{ perfil.distanciaMaximaKm || 20 }} km</div>
+      </div>
+
       <div class="divider"></div>
 
-      <!-- Sobre -->
       <h3>Sobre mim</h3>
       <div class="descricao" *ngIf="perfil.descricao">
         <p>{{ perfil.descricao }}</p>
@@ -50,13 +50,11 @@
 
       <div class="divider"></div>
 
-      <!-- Membro desde -->
       <div class="info-item">
         <div class="label">📅 Membro desde</div>
         <div class="value">{{ getDataCadastro() }}</div>
       </div>
 
-      <!-- Botão -->
       <div class="actions">
         <button class="btn-editar" (click)="editarPerfil()">
           ✏️ Editar perfil
@@ -64,13 +62,11 @@
       </div>
     </div>
 
-    <!-- Loading -->
     <div class="loading-container" *ngIf="loading">
       <div class="spinner"></div>
       <p>Carregando perfil...</p>
     </div>
 
-    <!-- Error -->
     <div class="error-container" *ngIf="errorMessage && !loading">
       <p>{{ errorMessage }}</p>
       <button class="btn-retry" (click)="carregarPerfil()">Tentar novamente</button>

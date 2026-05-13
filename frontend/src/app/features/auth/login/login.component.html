@@ -2,14 +2,17 @@
   <div class="login-card">
     <div class="logo">
       <h1>Guilda Social</h1>
-      <p>Bem-vindo de volta!</p>
+      <p>Encontre parceiros para seus jogos favoritos!</p>
     </div>
 
     <div class="error-message" *ngIf="errorMessage">
-      {{ errorMessage }}
+      ⚠️ {{ errorMessage }}
+    </div>
+    <div class="success-message" *ngIf="successMessage">
+      ✅ {{ successMessage }}
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" *ngIf="!modoRecuperacao">
       <div class="form-group">
         <label>E-mail</label>
         <input
@@ -18,8 +21,7 @@
           placeholder="seu@email.com"
           [class.invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
         <div class="error" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-          <span *ngIf="loginForm.get('email')?.errors?.['required']">E-mail é obrigatório</span>
-          <span *ngIf="loginForm.get('email')?.errors?.['email']">E-mail inválido</span>
+          E-mail inválido
         </div>
       </div>
 
@@ -28,22 +30,46 @@
         <input
           type="password"
           formControlName="senha"
-          placeholder="******"
+          placeholder="Digite sua senha"
           [class.invalid]="loginForm.get('senha')?.invalid && loginForm.get('senha')?.touched">
-        <div class="error" *ngIf="loginForm.get('senha')?.invalid && loginForm.get('senha')?.touched">
-          <span *ngIf="loginForm.get('senha')?.errors?.['required']">Senha é obrigatória</span>
-          <span *ngIf="loginForm.get('senha')?.errors?.['minlength']">Mínimo 6 caracteres</span>
-        </div>
       </div>
 
       <button type="submit" class="btn-login" [disabled]="loading">
         <span *ngIf="!loading">Entrar</span>
         <span *ngIf="loading" class="loading-spinner"></span>
       </button>
+
+      <div class="links">
+        <a (click)="ativarModoRecuperacao()" class="link-esqueci">Esqueci minha senha</a>
+      </div>
+    </form>
+
+    <form [formGroup]="recuperarForm" (ngSubmit)="solicitarRecuperacao()" *ngIf="modoRecuperacao">
+      <div class="form-group">
+        <label>E-mail cadastrado</label>
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="seu@email.com"
+          [class.invalid]="recuperarForm.get('email')?.invalid && recuperarForm.get('email')?.touched">
+        <div class="error" *ngIf="recuperarForm.get('email')?.invalid && recuperarForm.get('email')?.touched">
+          E-mail inválido
+        </div>
+        <small>Enviaremos um link de recuperação para este e-mail</small>
+      </div>
+
+      <button type="submit" class="btn-login" [disabled]="recuperando">
+        <span *ngIf="!recuperando">Enviar link de recuperação</span>
+        <span *ngIf="recuperando" class="loading-spinner"></span>
+      </button>
+
+      <button type="button" class="btn-voltar" (click)="voltarLogin()">
+        ← Voltar para o login
+      </button>
     </form>
 
     <div class="register-link">
-      Não tem uma conta? <a href="/cadastro">Criar conta</a>
+      Não tem uma conta? <a routerLink="/cadastro">Criar conta</a>
     </div>
   </div>
 </div>

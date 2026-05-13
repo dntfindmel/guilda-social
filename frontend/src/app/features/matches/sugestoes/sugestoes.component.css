@@ -9,20 +9,76 @@
   padding: 20px;
 }
 
+/* Loading, Error */
+.loading-container, .error-container {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 32px;
+  backdrop-filter: blur(10px);
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255,255,255,0.2);
+  border-top-color: #F4C025;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Status Badge */
+.status-badge {
+  text-align: center;
+  margin-bottom: 16px;
+  color: #4ade80;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.online-dot {
+  width: 8px;
+  height: 8px;
+  background: #4ade80;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
 /* Card Principal */
 .card {
   position: relative;
   border-radius: 32px;
   overflow: hidden;
   margin-bottom: 20px;
-  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
   min-height: 500px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  transition: all 0.3s ease;
 }
 
-/* Imagem de fundo do card */
+.card.animate-out {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
 .card-bg {
   position: absolute;
   top: 0;
@@ -35,10 +91,9 @@
 }
 
 .card-bg-gradient {
-  background: #221E10;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
 }
 
-/* Overlay escuro para o texto ficar legível */
 .card-overlay {
   position: absolute;
   top: 0;
@@ -48,7 +103,6 @@
   background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.3) 100%);
 }
 
-/* Conteúdo do card (sobreposto) */
 .card-content {
   position: relative;
   z-index: 2;
@@ -73,10 +127,6 @@
   border: 1px solid rgba(244,192,37,0.3);
 }
 
-.card-info {
-  margin-bottom: 16px;
-}
-
 .card-info h2 {
   font-size: 1.8rem;
   color: white;
@@ -87,6 +137,7 @@
 .distance {
   color: rgba(255,255,255,0.8);
   font-size: 0.85rem;
+  margin-bottom: 16px;
 }
 
 .tags {
@@ -159,15 +210,42 @@
   transform: scale(1.02);
 }
 
+/* Botão de Atualizar dentro dos cards */
+.refresh-button-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.btn-refresh-cards {
+  background: rgba(244, 192, 37, 0.2);
+  border: 1px solid rgba(244, 192, 37, 0.3);
+  padding: 10px 20px;
+  border-radius: 40px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #F4C025;
+  transition: all 0.2s;
+}
+
+.btn-refresh-cards:hover:not(:disabled) {
+  background: #F4C025;
+  color: #221E10;
+}
+
+.btn-refresh-cards:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Cards Recentes */
 .recent-section {
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid rgba(0,0,0,0.1);
+  border-top: 1px solid rgba(255,255,255,0.1);
 }
 
 .recent-section h3 {
-  color: #64748B;
+  color: #94A3B8;
   font-size: 0.75rem;
   letter-spacing: 1px;
   margin-bottom: 16px;
@@ -183,10 +261,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: white;
+  background: rgba(255,255,255,0.05);
   border-radius: 20px;
   padding: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  backdrop-filter: blur(5px);
 }
 
 .recent-avatar {
@@ -217,47 +295,24 @@
 }
 
 .recent-name {
-  color: #221E10;
+  color: #F4C025;
   font-weight: 600;
   font-size: 0.9rem;
 }
 
 .recent-distance, .recent-level {
-  color: #64748B;
+  color: #94A3B8;
   font-size: 0.7rem;
 }
 
-/* Loading e Error */
-.loading-container, .error-container, .empty-container {
+/* Mensagem sem sugestões */
+.no-more-cards {
   text-align: center;
   padding: 60px 20px;
-  background: rgba(47, 42, 22, 0.8);
+  background: rgba(255,255,255,0.1);
   border-radius: 32px;
-}
-
-.spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid #E2E8F0;
-  border-top-color: #F4C025;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 16px;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.btn-retry {
-  margin-top: 16px;
-  background: #F4C025;
-  color: #221E10;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 40px;
-  font-weight: 600;
-  cursor: pointer;
+  backdrop-filter: blur(10px);
+  margin-top: 40px;
 }
 
 .empty-icon {
@@ -266,37 +321,46 @@
   opacity: 0.5;
 }
 
-/* Animação do card */
-.card.animate-out {
-  transform: translateX(-100%);
-  opacity: 0;
-  transition: all 0.3s ease;
+.no-more-cards h3 {
+  color: white;
+  margin-bottom: 8px;
 }
 
-/* Status Badge */
-.status-badge {
-  text-align: center;
-  margin-bottom: 16px;
-  color: #4ade80;
-  font-size: 0.75rem;
+.no-more-cards p {
+  color: #94A3B8;
+  margin-bottom: 20px;
+}
+
+.btn-retry {
+  background: #F4C025;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 40px;
   font-weight: 600;
-  letter-spacing: 1px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+  cursor: pointer;
+  color: #221E10;
 }
 
-.online-dot {
-  width: 8px;
-  height: 8px;
-  background: #4ade80;
-  border-radius: 50%;
-  display: inline-block;
-  animation: pulse 1.5s infinite;
+.btn-retry:hover {
+  background: #E0AC00;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.2); }
+/* Responsividade */
+@media (max-width: 480px) {
+  .sugestoes-content {
+    padding: 12px;
+  }
+
+  .card {
+    min-height: 420px;
+  }
+
+  .card-info h2 {
+    font-size: 1.4rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
 }

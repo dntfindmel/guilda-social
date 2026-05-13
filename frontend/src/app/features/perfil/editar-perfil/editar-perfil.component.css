@@ -313,3 +313,9 @@ textarea {
     flex-direction: column;
   }
 }
+
+.senha-info {
+  font-size: 0.8rem;
+  color: #94A3B8;
+  margin-bottom: 16px;
+}
