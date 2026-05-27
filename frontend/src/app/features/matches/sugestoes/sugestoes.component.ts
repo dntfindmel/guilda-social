@@ -46,7 +46,6 @@ export class SugestoesComponent implements OnInit {
       next: (data) => {
         this.sugestoes = data;
         this.currentIndex = 0;
-        // Calcular valores aleatórios uma única vez para cada jogador
         this.sugestoes.forEach(jogador => {
           this.niveis.set(jogador.id, Math.floor(Math.random() * 60) + 20);
           this.distancias.set(jogador.id, Math.floor(Math.random() * 10) + 1);
@@ -70,7 +69,6 @@ export class SugestoesComponent implements OnInit {
     return this.sugestoes[this.currentIndex];
   }
 
-  // Método para obter a URL da foto - COM VERIFICAÇÃO DE NULL
   getFotoUrl(jogador: Sugestao | null): string {
     if (!jogador || !jogador.fotoPerfil) return '';
     if (jogador.fotoPerfil.startsWith('http')) {
@@ -139,7 +137,6 @@ solicitarChat(): void {
 }
 
 jaSolicitou(jogadorId: string): boolean {
-    // Verificar se já foi enviada solicitação para este jogador
     const solicitacoes = localStorage.getItem('solicitacoesEnviadas');
     if (solicitacoes) {
         const enviadas = JSON.parse(solicitacoes);

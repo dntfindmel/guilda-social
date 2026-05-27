@@ -42,7 +42,6 @@ export class ChatComponent implements OnInit {
 
     this.matchService.getMeusMatches(usuarioId).subscribe({
       next: (data) => {
-        // Ordenar por última mensagem (mais recente no topo)
         this.matches = data.sort((a, b) => {
           const dataA = a.ultimaMensagem?.dataEnvio ? new Date(a.ultimaMensagem.dataEnvio) : new Date(0);
           const dataB = b.ultimaMensagem?.dataEnvio ? new Date(b.ultimaMensagem.dataEnvio) : new Date(0);
@@ -92,37 +91,33 @@ export class ChatComponent implements OnInit {
     }
     return 'Nenhuma mensagem ainda';
   }
-
-  // REGRA CORRIGIDA:
-  // - Se NÃO tem mensagem: "✨ Novo match!"
-  // - Se tem mensagem e a última foi do outro: "⏳ Aguardando resposta"
-  // - Se tem mensagem e a última foi minha: normaisem destaque
   getStatusChat(match: any): { texto: string; classe: string; destaque: boolean } {
     const usuarioId = this.authService.getUsuarioId();
 
-    // Caso 1: Sem mensagens (match novo)
     if (!match.ultimaMensagem) {
       return { texto: '✨ Novo match!', classe: 'new', destaque: false };
     }
 
-    // Caso 2: Última mensagem foi do outro usuário (aguardando resposta)
     if (match.ultimaMensagem.remetenteId !== usuarioId) {
       return { texto: '⏳ Aguardando resposta', classe: 'waiting', destaque: true };
     }
 
-    // Caso 3: Última mensagem foi minha (conversa ativa)
     return { texto: '💬 Conversa ativa', classe: 'active', destaque: false };
   }
 
-  getDataUltimaMensagem(match: any): string {
-    if (match.ultimaMensagem?.dataEnvio) {
-      const data = new Date(match.ultimaMensagem.dataEnvio);
-      const hoje = new Date();
-      if (data.toDateString() === hoje.toDateString()) {
-        return data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      }
-      return data.toLocaleDateString('pt-BR');
+getDataUltimaMensagem(match: any): string {
+  if (match.ultimaMensagem?.dataEnvio) {
+    const data = new Date(match.ultimaMensagem.dataEnvio);
+    const hoje = new Date();
+
+    const dataLocal = new Date(data.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+    const hojeLocal = new Date(hoje.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+
+    if (dataLocal.toDateString() === hojeLocal.toDateString()) {
+      return dataLocal.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     }
-    return '';
+    return dataLocal.toLocaleDateString('pt-BR');
   }
+  return '';
+}
 }

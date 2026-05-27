@@ -48,7 +48,6 @@ export class ChatDetalheComponent implements OnInit, OnDestroy {
     this.carregarMatch();
     this.carregarMensagens();
 
-    // Recarregar mensagens a cada 3 segundos (polling)
     this.intervalId = setInterval(() => {
       this.carregarMensagensSemScroll();
     }, 3000);
@@ -72,7 +71,6 @@ export class ChatDetalheComponent implements OnInit, OnDestroy {
           const encontrado = matches.find(m => m.id === this.matchId);
           if (encontrado) {
             this.match = encontrado;
-            // Determinar o nome do destinatário (quem não é o usuário logado)
             if (encontrado.usuario1?.id === this.remetenteId) {
               this.destinatarioNome = encontrado.usuario2?.nome || 'Usuário';
               this.destinatarioFoto = encontrado.usuario2?.fotoPerfil || '';
@@ -150,22 +148,41 @@ export class ChatDetalheComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
-  formatarHorario(data: string): string {
-    if (!data) return '';
-    const date = new Date(data);
-    return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  }
+formatarHorario(data: string): string {
+  if (!data) return '';
+
+  const date = new Date(data);
+
+  if (isNaN(date.getTime())) return '';
+
+  return date.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'America/Sao_Paulo'
+  });
+}
+
+formatarData(data: string): string {
+  if (!data) return '';
+
+  const date = new Date(data);
+  if (isNaN(date.getTime())) return '';
+
+  return date.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone: 'America/Sao_Paulo'
+  });
+}
 
   isMensagemMinha(remetenteId: string): boolean {
     return remetenteId === this.remetenteId;
   }
 
-  // Decide se deve mostrar o avatar do outro usuário
   shouldShowAvatar(msg: any, index: number): boolean {
-    // Se não é minha mensagem e é a primeira mensagem
     if (index === 0 && !this.isMensagemMinha(msg.remetenteId)) return true;
 
-    // Se a mensagem anterior era minha, mostra avatar
     const mensagemAnterior = this.mensagens[index - 1];
     if (mensagemAnterior && this.isMensagemMinha(mensagemAnterior.remetenteId)) {
       return true;

@@ -21,7 +21,6 @@ export class EditarPerfilComponent implements OnInit {
   private authService = inject(AuthService);
   private perfilService = inject(PerfilService);
 
-  // Formulário único contendo todos os campos, incluindo senha
   editForm: FormGroup;
   loading = true;
   saving = false;
@@ -34,14 +33,12 @@ export class EditarPerfilComponent implements OnInit {
 
   constructor() {
     this.editForm = this.fb.group({
-      // Informações do perfil
       nome: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       telefone: ['', [Validators.pattern(/^\(?[1-9]{2}\)? ?(?:[2-8]|9[1-9])[0-9]{3}-?[0-9]{4}$/)]],
       cidade: ['', Validators.required],
       estado: ['', Validators.required],
       descricao: ['', [Validators.maxLength(500)]],
       distanciaMaximaKm: [20, [Validators.min(1), Validators.max(100)]],
-      // Campos de senha
       senhaAtual: [''],
       novaSenha: ['', [Validators.minLength(6)]],
       confirmarNovaSenha: ['']
@@ -168,7 +165,6 @@ export class EditarPerfilComponent implements OnInit {
         return;
       }
 
-      // Preparar dados do perfil
       const dados: any = {
         nome: this.editForm.get('nome')?.value,
         telefone: this.editForm.get('telefone')?.value || null,
@@ -178,28 +174,23 @@ export class EditarPerfilComponent implements OnInit {
         distanciaMaximaKm: this.editForm.get('distanciaMaximaKm')?.value
       };
 
-      // Verificar se há alteração de senha
       const senhaAtual = this.editForm.get('senhaAtual')?.value;
       const novaSenha = this.editForm.get('novaSenha')?.value;
       const temAlteracaoSenha = senhaAtual && novaSenha && novaSenha.length >= 6;
 
       try {
-        // 1. Salvar dados do perfil
         await this.perfilService.atualizarPerfil(usuarioId, dados).toPromise();
 
-        // 2. Se tiver foto, fazer upload
         if (this.fotoFile) {
           await this.uploadFoto();
         }
 
-        // 3. Se tiver alteração de senha
         if (temAlteracaoSenha) {
           await this.http.post(`http://localhost:8080/api/auth/alterar-senha/${usuarioId}`, {
             senhaAntiga: senhaAtual,
             novaSenha: novaSenha
           }).toPromise();
           this.successMessage = 'Perfil e senha atualizados com sucesso!';
-          // Limpar campos de senha após alteração
           this.editForm.patchValue({
             senhaAtual: '',
             novaSenha: '',

@@ -9,7 +9,7 @@ import { Usuario } from '../../../core/models/usuario.model';
 @Component({
   selector: 'app-detalhe-jogador',
   standalone: true,
-  imports: [CommonModule], // Remove RouterLink
+  imports: [CommonModule], 
   templateUrl: './detalhe-jogador.component.html',
   styleUrls: ['./detalhe-jogador.component.css']
 })

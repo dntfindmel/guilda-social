@@ -18,7 +18,6 @@
         <div *ngIf="errorMessage" class="error-message">❌ {{ errorMessage }}</div>
 
         <form [formGroup]="editForm">
-          <!-- Foto -->
           <div class="foto-section">
             <div class="foto-label">FOTO DE PERFIL</div>
             <div class="foto-container">
@@ -38,7 +37,6 @@
             </div>
           </div>
 
-          <!-- Informações Pessoais -->
           <div class="form-group">
             <label>Nome completo *</label>
             <input type="text" formControlName="nome" placeholder="Digite seu nome">
@@ -63,7 +61,6 @@
             </div>
           </div>
 
-          <!-- Distância -->
           <div class="form-group">
             <label>Distância máxima para matches: {{ editForm.get('distanciaMaximaKm')?.value }} km</label>
             <input type="range" formControlName="distanciaMaximaKm" min="1" max="100" step="1" (input)="onDistanciaChange($event)">
@@ -71,7 +68,6 @@
 
           <div class="divider"></div>
 
-          <!-- Sobre Você -->
           <h2>Sobre Você</h2>
           <div class="form-group">
             <textarea formControlName="descricao" rows="4" placeholder="Conte sobre suas histórias épicas..."></textarea>
@@ -79,7 +75,6 @@
 
           <div class="divider"></div>
 
-          <!-- Alterar Senha -->
           <h2>Alterar Senha</h2>
           <p class="senha-info">Preencha apenas se quiser alterar sua senha</p>
 
@@ -103,7 +98,6 @@
             As senhas não conferem
           </div>
 
-          <!-- Botões -->
           <div class="form-actions">
             <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
             <button type="button" class="btn-salvar" (click)="salvar()" [disabled]="saving">
