@@ -1,0 +1,80 @@
+import { Routes } from '@angular/router';
+import { AuthGuard } from './core/guards/auth.guard';
+import { LoginGuard } from './core/guards/login.guard';
+import { ChatComponent } from './features/chat/chat.component';
+import { ChatDetalheComponent } from './features/chat-detalhe/chat-detalhe.component';
+
+export const routes: Routes = [
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+
+  // Rotas públicas
+  {
+    path: 'login',
+    loadComponent: () => import('./features/auth/login/login.component')
+      .then(m => m.LoginComponent),
+    canActivate: [LoginGuard]
+  },
+  {
+    path: 'cadastro',
+    loadComponent: () => import('./features/auth/cadastro/cadastro.component')
+      .then(m => m.CadastroComponent),
+    canActivate: [LoginGuard]
+  },
+
+  // Rotas protegidas (exigem login) - Sprint 3
+  {
+    path: 'sugestoes',
+    loadComponent: () => import('./features/matches/sugestoes/sugestoes.component')
+      .then(m => m.SugestoesComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'jogador/:id',
+    loadComponent: () => import('./features/matches/detalhe-jogador/detalhe-jogador.component')
+      .then(m => m.DetalheJogadorComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+     path: 'perfil',
+     loadComponent: () => import('./features/perfil/visualizar-perfil/visualizar-perfil.component')
+       .then(m => m.VisualizarPerfilComponent),
+     canActivate: [AuthGuard]
+   },
+   {
+     path: 'perfil/editar',
+     loadComponent: () => import('./features/perfil/editar-perfil/editar-perfil.component')
+       .then(m => m.EditarPerfilComponent),
+     canActivate: [AuthGuard]
+   },
+  {
+  path: 'grupos',
+  loadComponent: () => import('./features//listar-grupos/listar-grupos.component')
+    .then(m => m.ListarGruposComponent),
+  canActivate: [AuthGuard]
+},
+{
+  path: 'grupos/criar',
+  loadComponent: () => import('./features/criar-grupo/criar-grupo.component')
+    .then(m => m.CriarGrupoComponent),
+  canActivate: [AuthGuard]
+},
+{
+  path: 'grupo/:id',
+  loadComponent: () => import('./features/detalhe-grupo/detalhe-grupo.component')
+    .then(m => m.DetalheGrupoComponent),
+  canActivate: [AuthGuard]
+},
+{
+  path: 'chat',
+  loadComponent: () => import('./features/chat/chat.component')
+    .then(m => m.ChatComponent),
+  canActivate: [AuthGuard]
+},
+{
+  path: 'chat/detalhe/:id',
+  loadComponent: () => import('./features/chat-detalhe/chat-detalhe.component')
+    .then(m => m.ChatDetalheComponent),
+  canActivate: [AuthGuard]
+},
+  { path: '**', redirectTo: '/login' }
+];

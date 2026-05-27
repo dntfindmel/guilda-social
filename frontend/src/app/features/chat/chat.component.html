@@ -1,0 +1,54 @@
+<div class="chat-container">
+  <div class="chat-content">
+    <!-- Header -->
+    <div class="chat-header">
+      <button class="btn-back-sugestoes" (click)="irParaSugestoes()">
+        ← Sugestões
+      </button>
+      <h1>Conversas</h1>
+      <button class="btn-refresh" (click)="carregarMatches()" [disabled]="loading">🔄</button>
+    </div>
+
+    <div class="loading-container" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Carregando conversas...</p>
+    </div>
+
+    <div class="error-container" *ngIf="errorMessage && !loading">
+      <p>{{ errorMessage }}</p>
+      <button class="btn-retry" (click)="carregarMatches()">Tentar novamente</button>
+    </div>
+
+    <div class="empty-container" *ngIf="!loading && !errorMessage && matches.length === 0">
+      <div class="empty-icon">💬</div>
+      <h3>Nenhuma conversa ainda</h3>
+      <p>Quando você aceitar um match, suas conversas aparecerão aqui.</p>
+      <button class="btn-encontrar" routerLink="/sugestoes">Encontrar jogadores</button>
+    </div>
+
+    <div class="matches-list" *ngIf="!loading && !errorMessage && matches.length > 0">
+      <div
+        *ngFor="let match of matches"
+        class="match-item"
+        [class.sem-resposta]="getStatusChat(match).destaque"
+        [routerLink]="['/chat/detalhe', match.id]"
+      >
+        <div class="avatar">
+          <img *ngIf="getFotoAmigo(match)" [src]="getFotoAmigo(match)" alt="Foto">
+          <span *ngIf="!getFotoAmigo(match)">{{ getNomeAmigo(match).charAt(0).toUpperCase() }}</span>
+        </div>
+
+        <div class="info">
+          <div class="info-header">
+            <strong>{{ getNomeAmigo(match) }}</strong>
+            <small>{{ getDataUltimaMensagem(match) }}</small>
+          </div>
+          <p class="ultima-mensagem">{{ getUltimaMensagem(match) }}</p>
+          <span class="match-status {{ getStatusChat(match).classe }}">
+            {{ getStatusChat(match).texto }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

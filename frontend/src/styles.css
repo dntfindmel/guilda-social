@@ -1,0 +1,524 @@
+/* ============================================ */
+/* FONTS - Inter (como no Figma) */
+/* ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* ============================================ */
+/* VARIÁVEIS - CORES EXATAS DO FIGMA */
+/* ============================================ */
+:root {
+  /* Cores principais */
+  --primary: #F4C025;
+  --primary-dark: #E0AC00;
+  --primary-light: rgba(244, 192, 37, 0.1);
+
+  /* Fundos */
+  --bg-primary: #F1F5F9;
+  --card-bg: #FFFFFF;
+
+  /* Textos */
+  --text-primary: #221E10;
+  --text-secondary: rgba(34, 30, 16, 0.5);
+  --text-muted: #64748B;
+  --text-placeholder: #94A3B8;
+
+  /* Bordas e inputs */
+  --border-color: #CBD5E1;
+  --border-focus: #F4C025;
+  --input-bg: #FFFFFF;
+
+  /* Checkbox */
+  --checkbox-border: #CBD5E1;
+  --checkbox-checked: #F4C025;
+
+  /* Botões */
+  --btn-bg: #F4C025;
+  --btn-text: #221E10;
+  --btn-hover-bg: #E0AC00;
+
+  /* Links */
+  --link-color: #F4C025;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* Bordas arredondadas */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-full: 9999px;
+}
+
+/* ============================================ */
+/* RESET E ESTILOS BASE */
+/* ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg-primary);
+  min-height: 100vh;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================ */
+/* CONTAINER PRINCIPAL */
+/* ============================================ */
+.perfil-container {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F1F5F9;
+}
+
+/* ============================================ */
+/* CARD */
+/* ============================================ */
+.perfil-card {
+  max-width: 640px;
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================ */
+/* TÍTULO PRINCIPAL */
+/* ============================================ */
+.titulo-principal {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #221E10;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+/* ============================================ */
+/* DIVISÓRIAS */
+/* ============================================ */
+.divider {
+  height: 1px;
+  background: #E2E8F0;
+  margin: 1.5rem 0;
+}
+
+/* ============================================ */
+/* SEÇÃO FOTO DE PERFIL */
+/* ============================================ */
+.foto-section {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.foto-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #94A3B8;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.foto-placeholder {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 0.5rem;
+  border-radius: 50%;
+  background: #F8FAFE;
+  border: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.foto-placeholder:hover {
+  border-color: #F4C025;
+  background: #FFFBF0;
+}
+
+.avatar-preview {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-icon {
+  font-size: 1.25rem;
+  color: #94A3B8;
+}
+
+.btn-escolher-foto {
+  background: none;
+  border: none;
+  color: #F4C025;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.btn-escolher-foto:hover {
+  color: #E0AC00;
+  text-decoration: underline;
+}
+
+/* ============================================ */
+/* TÍTULOS DAS SEÇÕES */
+/* ============================================ */
+h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #221E10;
+  margin-bottom: 1rem;
+  letter-spacing: -0.015em;
+}
+
+.subtitulo {
+  font-size: 0.8rem;
+  color: #64748B;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+/* ============================================ */
+/* FORMULÁRIO - CAMPOS */
+/* ============================================ */
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0;
+}
+
+.form-group {
+  flex: 1;
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #64748B;
+  margin-bottom: 0.25rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+  color: #221E10;
+}
+
+.form-group input::placeholder {
+  color: #CBD5E1;
+  font-weight: 400;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #F4C025;
+  box-shadow: 0 0 0 2px rgba(244, 192, 37, 0.1);
+}
+
+.form-group input.invalid,
+.form-group select.invalid {
+  border-color: #F4C025;
+}
+
+/* Campo de descrição - largura total */
+.sobre-section {
+  margin: 0.5rem 0;
+}
+
+.sobre-section textarea {
+  width: 100%;
+  padding: 0.75rem;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+  color: #221E10;
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+}
+
+.sobre-section textarea:focus {
+  outline: none;
+  border-color: #F4C025;
+  box-shadow: 0 0 0 2px rgba(244, 192, 37, 0.1);
+}
+
+.sobre-section textarea::placeholder {
+  color: #CBD5E1;
+}
+
+/* ============================================ */
+/* CHECKBOXES */
+/* ============================================ */
+.interesses-opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.interesse-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.interesse-option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  background: #FFFFFF;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.interesse-option:hover .checkmark {
+  border-color: #F4C025;
+}
+
+.interesse-option input:checked ~ .checkmark {
+  background: #F4C025;
+  border-color: #F4C025;
+}
+
+.interesse-option input:checked ~ .checkmark::after {
+  content: "✓";
+  font-size: 11px;
+  font-weight: 600;
+  color: #221E10;
+}
+
+.option-text {
+  margin-left: 10px;
+  font-size: 0.875rem;
+  color: #221E10;
+}
+
+/* ============================================ */
+/* TERMOS E CONDIÇÕES */
+/* ============================================ */
+.termos {
+  margin-bottom: 1.25rem;
+}
+
+.termos-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.termos-checkbox input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.termos-checkbox .checkmark {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.termos-text {
+  margin-left: 10px;
+  font-size: 0.75rem;
+  color: #64748B;
+}
+
+.termos-text a {
+  color: #F4C025;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.termos-text a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================ */
+/* BOTÃO FINALIZAR */
+/* ============================================ */
+.btn-finalizar {
+  width: 100%;
+  padding: 0.75rem;
+  background: #F4C025;
+  color: #221E10;
+  border: none;
+  border-radius: 40px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-finalizar:hover:not(:disabled) {
+  background: #E0AC00;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(244, 192, 37, 0.3);
+}
+
+.btn-finalizar:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-finalizar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(34, 30, 16, 0.2);
+  border-radius: 50%;
+  border-top-color: #221E10;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================ */
+/* MENSAGEM DE ERRO */
+/* ============================================ */
+.error-message {
+  margin-top: 1rem;
+  padding: 0.6rem;
+  background: #FEF9E6;
+  color: #E0AC00;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* ============================================ */
+/* LINK DE LOGIN */
+/* ============================================ */
+.login-link {
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.75rem;
+  color: #64748B;
+}
+
+.login-link a {
+  color: #F4C025;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================ */
+/* RESPONSIVIDADE */
+/* ============================================ */
+@media (max-width: 640px) {
+  .perfil-card {
+    padding: 1.25rem;
+  }
+
+  .titulo-principal {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .divider {
+    margin: 1rem 0;
+  }
+
+  h2 {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .perfil-container {
+    padding: 0.75rem;
+  }
+
+  .perfil-card {
+    padding: 1rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .form-group {
+    margin-bottom: 0.75rem;
+  }
+
+  .foto-placeholder {
+    width: 72px;
+    height: 72px;
+  }
+
+  .btn-finalizar {
+    padding: 0.65rem;
+  }
+}

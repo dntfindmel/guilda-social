@@ -1,0 +1,366 @@
+.sugestoes-container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #221E10 0%, #0a0906 100%);
+}
+
+.sugestoes-content {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Loading, Error */
+.loading-container, .error-container {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 32px;
+  backdrop-filter: blur(10px);
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255,255,255,0.2);
+  border-top-color: #F4C025;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Status Badge */
+.status-badge {
+  text-align: center;
+  margin-bottom: 16px;
+  color: #4ade80;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.online-dot {
+  width: 8px;
+  height: 8px;
+  background: #4ade80;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+/* Card Principal */
+.card {
+  position: relative;
+  border-radius: 32px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  transition: all 0.3s ease;
+}
+
+.card.animate-out {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.card-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.card-bg-gradient {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+
+.card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.3) 100%);
+}
+
+.card-content {
+  position: relative;
+  z-index: 2;
+  padding: 24px;
+  color: white;
+}
+
+.card-header {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+}
+
+.level-badge {
+  background: rgba(244, 192, 37, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 6px 14px;
+  border-radius: 40px;
+  font-weight: bold;
+  color: #F4C025;
+  font-size: 0.85rem;
+  border: 1px solid rgba(244,192,37,0.3);
+}
+
+.card-info h2 {
+  font-size: 1.8rem;
+  color: white;
+  margin-bottom: 4px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.distance {
+  color: rgba(255,255,255,0.8);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tag {
+  background: rgba(244, 192, 37, 0.15);
+  backdrop-filter: blur(5px);
+  color: #F4C025;
+  padding: 6px 14px;
+  border-radius: 40px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid rgba(244,192,37,0.2);
+}
+
+.description {
+  color: rgba(255,255,255,0.9);
+  line-height: 1.5;
+  font-size: 0.9rem;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(5px);
+  padding: 12px;
+  border-radius: 16px;
+  margin-top: 8px;
+}
+
+/* Botões de Ação */
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.btn-passar {
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  padding: 14px;
+  border-radius: 40px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-passar:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.btn-chat {
+  flex: 1;
+  background: #F4C025;
+  border: none;
+  color: #1a1a2e;
+  padding: 14px;
+  border-radius: 40px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-chat:hover {
+  background: #E0AC00;
+  transform: scale(1.02);
+}
+
+/* Botão de Atualizar dentro dos cards */
+.refresh-button-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.btn-refresh-cards {
+  background: rgba(244, 192, 37, 0.2);
+  border: 1px solid rgba(244, 192, 37, 0.3);
+  padding: 10px 20px;
+  border-radius: 40px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #F4C025;
+  transition: all 0.2s;
+}
+
+.btn-refresh-cards:hover:not(:disabled) {
+  background: #F4C025;
+  color: #221E10;
+}
+
+.btn-refresh-cards:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Cards Recentes */
+.recent-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.recent-section h3 {
+  color: #94A3B8;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.recent-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recent-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 20px;
+  padding: 12px;
+  backdrop-filter: blur(5px);
+}
+
+.recent-avatar {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #F4C025, #E0AC00);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.recent-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recent-avatar-initials {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #1a1a2e;
+}
+
+.recent-info {
+  flex: 1;
+}
+
+.recent-name {
+  color: #F4C025;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.recent-distance, .recent-level {
+  color: #94A3B8;
+  font-size: 0.7rem;
+}
+
+/* Mensagem sem sugestões */
+.no-more-cards {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 32px;
+  backdrop-filter: blur(10px);
+  margin-top: 40px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.no-more-cards h3 {
+  color: white;
+  margin-bottom: 8px;
+}
+
+.no-more-cards p {
+  color: #94A3B8;
+  margin-bottom: 20px;
+}
+
+.btn-retry {
+  background: #F4C025;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 40px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #221E10;
+}
+
+.btn-retry:hover {
+  background: #E0AC00;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .sugestoes-content {
+    padding: 12px;
+  }
+
+  .card {
+    min-height: 420px;
+  }
+
+  .card-info h2 {
+    font-size: 1.4rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

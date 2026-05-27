@@ -1,0 +1,65 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    container_name: guilda-postgres
+    environment:
+      POSTGRES_DB: guilda_social
+      POSTGRES_USER: guilda_user
+      POSTGRES_PASSWORD: guilda_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - guilda-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U guilda_user -d guilda_social"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: dntfindmel/guilda-social-backend:1.0.0
+    build: ./backend
+    restart: unless-stopped
+    container_name: guilda-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: guilda_social
+      DB_USER: guilda_user
+      DB_PASSWORD: guilda_pass
+      JWT_SECRET: guildaSocialSecretKey2024SuperSecureForJWTTokenGenerationWithAtLeast512Bits
+      JWT_EXPIRATION: 86400000
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - guilda-network
+    volumes:
+      - uploads:/app/uploads
+
+  frontend:
+    image: dntfindmel/guilda-social-frontend:1.0.0
+    build: ./frontend
+    restart: unless-stopped
+    container_name: guilda-frontend
+    ports:
+      - "3030:80"
+    depends_on:
+      - backend
+    networks:
+      - guilda-network
+
+volumes:
+  postgres_data:
+  uploads:
+
+networks:
+  guilda-network:
+    driver: bridge

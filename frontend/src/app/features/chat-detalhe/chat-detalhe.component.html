@@ -1,0 +1,48 @@
+<div class="chat-detalhe-container">
+  <div class="chat-detalhe-content">
+    <div class="chat-header">
+      <button class="btn-back" [routerLink]="['/chat']">← Voltar</button>
+      <div class="header-info">
+        <div class="avatar">
+          <img *ngIf="destinatarioFoto" [src]="getFotoUrl(destinatarioFoto)" alt="Foto">
+          <span *ngIf="!destinatarioFoto">{{ destinatarioNome.charAt(0).toUpperCase() || '?' }}</span>
+        </div>
+        <div class="info">
+          <strong>{{ destinatarioNome }}</strong>
+          <small>Online</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="messages-container" #messagesContainer>
+      <div class="messages">
+        <div *ngFor="let msg of mensagens; let i = index"
+             class="message-wrapper"
+             [class.my-message]="isMensagemMinha(msg.remetenteId)"
+             [class.other-message]="!isMensagemMinha(msg.remetenteId)">
+
+          <div class="message-avatar" *ngIf="!isMensagemMinha(msg.remetenteId)">
+            <img *ngIf="destinatarioFoto" [src]="getFotoUrl(destinatarioFoto)" alt="Foto">
+            <span *ngIf="!destinatarioFoto">{{ destinatarioNome.charAt(0).toUpperCase() }}</span>
+          </div>
+          <div class="message-avatar-placeholder" *ngIf="!isMensagemMinha(msg.remetenteId)"></div>
+
+          <div class="message-bubble">
+            <div class="message-text">{{ msg.conteudo }}</div>
+            <div class="message-time">{{ formatarHorario(msg.dataEnvio) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-wrapper">
+        <input type="text" [(ngModel)]="novaMensagem" placeholder="Digite uma mensagem..."
+               (keyup.enter)="enviarMensagem()" [disabled]="enviando">
+        <button class="btn-send" (click)="enviarMensagem()" [disabled]="!novaMensagem.trim() || enviando">
+          📤
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

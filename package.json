@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@angular/google-maps": "^21.2.8",
+    "@types/google.maps": "^3.64.0",
+    "angular": "^1.8.3",
+    "jsonwebtoken": "^9.0.3"
+  }
+}
