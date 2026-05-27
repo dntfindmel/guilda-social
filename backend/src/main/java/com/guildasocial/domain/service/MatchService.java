@@ -55,15 +55,12 @@ public class MatchService {
         Usuario alvo = usuarioRepository.findById(alvoId)
                 .orElseThrow(() -> new BusinessException("Usuário alvo não encontrado"));
 
-        // Verificar se já existe match
         Optional<Match> existingMatch = matchRepository.findMatchBetweenUsers(usuarioId, alvoId);
 
         if (existingMatch.isPresent()) {
             Match match = existingMatch.get();
 
-            // Se existe solicitação PENDENTE do outro usuário, aceitar automaticamente (match mútuo)
             if ("PENDENTE".equals(match.getStatus())) {
-                // Verificar se o PENDENTE foi enviado pelo alvo (não pelo atual)
                 if (match.getUsuario1().getId().equals(alvoId) || match.getUsuario2().getId().equals(alvoId)) {
                     match.setStatus("ACEITO");
                     match.setDataResposta(LocalDateTime.now());
@@ -73,7 +70,6 @@ public class MatchService {
             throw new BusinessException("Solicitação já processada");
         }
 
-        // Criar nova solicitação (PENDENTE)
         Match match = new Match();
         match.setUsuario1(usuario);
         match.setUsuario2(alvo);
@@ -119,7 +115,6 @@ public class MatchService {
         return matchRepository.findAllByUsuarioId(usuarioId);
     }
 
-    // Método para passar um usuário (não sugerir novamente)
     @Transactional
     public Match passarSugestao(UUID usuarioId, UUID alvoId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
@@ -127,7 +122,6 @@ public class MatchService {
         Usuario alvo = usuarioRepository.findById(alvoId)
                 .orElseThrow(() -> new BusinessException("Usuário alvo não encontrado"));
 
-        // Verificar se já existe match
         Optional<Match> existingMatch = matchRepository.findMatchBetweenUsers(usuarioId, alvoId);
 
         if (existingMatch.isPresent()) {
@@ -139,7 +133,6 @@ public class MatchService {
             throw new BusinessException("Não é possível passar este usuário");
         }
 
-        // Criar novo match como passado
         Match match = new Match();
         match.setUsuario1(usuario);
         match.setUsuario2(alvo);

@@ -5,6 +5,7 @@
 ![Angular](https://img.shields.io/badge/Angular-19.0.5-red)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)
 ![PWA](https://img.shields.io/badge/PWA-Enabled-purple)
+![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
 
 **Guilda Social** é uma plataforma de matchmaking para conectar jogadores de jogos presenciais (tabuleiro, RPG, card games) e online. O aplicativo utiliza um algoritmo de compatibilidade para sugerir parceiros de jogo com interesses semelhantes, proximidade geográfica e disponibilidade compatível.
 
@@ -18,6 +19,7 @@
 - [Arquitetura](#-arquitetura)
 - [Pré-requisitos](#-pré-requisitos)
 - [Instalação e Execução](#-instalação-e-execução)
+- [Docker](#-docker)
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [API Endpoints](#-api-endpoints)
 - [Banco de Dados](#-banco-de-dados)
@@ -40,44 +42,18 @@ O **Guilda Social** nasceu da necessidade de facilitar a conexão entre jogadore
 
 ## ✨ Funcionalidades
 
-### Sprint 1 - Cadastro e Perfil ✅
-- [x] Cadastro de usuário com dados pessoais
-- [x] Upload de foto de perfil
-- [x] Definição de interesses (jogos de tabuleiro, cartas, RPG)
+### ✅ Implementadas
+- [x] Cadastro de usuário com foto de perfil
+- [x] Login com autenticação JWT
+- [x] Recuperação de senha por e-mail
 - [x] Geolocalização automática
-- [x] Validação de idade (mínimo 13 anos)
-
-### Sprint 2 - Autenticação ✅
-- [x] Login com e-mail e senha
-- [x] Autenticação JWT (JSON Web Token)
-- [x] Proteção de rotas com Guards
-- [x] Interceptor para envio de token
-- [x] Logout
-
-### Sprint 3 - Matchmaking e Sugestões ✅
-- [x] Algoritmo de compatibilidade
+- [x] Edição de perfil completo (dados, foto, senha, raio de busca)
+- [x] Algoritmo de matchmaking por afinidade e distância
 - [x] Cards de sugestões estilo Tinder
-- [x] Perfil detalhado do jogador
-- [x] Envio de solicitações de conexão
-- [x] Seção "Online Recentemente"
-
-### Sprint 4 - Perfil e Edição (Em desenvolvimento)
-- [ ] Visualização do próprio perfil
-- [ ] Edição de informações pessoais
-- [ ] Gerenciamento de interesses
-- [ ] Configurações de privacidade
-
-### Sprint 5 - Grupos e Chat (Em desenvolvimento)
-- [ ] Criação de grupos
-- [ ] Convites para grupos
-- [ ] Chat em tempo real
-- [ ] Sistema de eventos
-
-### Sprint 6 - Notificações e PWA (Em desenvolvimento)
-- [ ] Notificações push
-- [ ] Modo offline
-- [ ] Instalação como aplicativo
-- [ ] Sincronização em segundo plano
+- [x] Chat em tempo real (polling)
+- [x] Lista de conversas com status (aguardando resposta / conversa ativa)
+- [x] Notificações visuais de novas mensagens
+- [x] PWA para instalação como aplicativo
 
 ---
 
@@ -88,7 +64,6 @@ O **Guilda Social** nasceu da necessidade de facilitar a conexão entre jogadore
 |------------|--------|------------|
 | Java | 21 LTS | Linguagem principal |
 | Spring Boot | 3.4.0 | Framework principal |
-| Spring Security | 3.4.0 | Autenticação e autorização |
 | Spring Data JPA | 3.4.0 | Persistência de dados |
 | PostgreSQL | 16 | Banco de dados relacional |
 | JWT | 0.11.5 | Tokens de autenticação |
@@ -101,11 +76,10 @@ O **Guilda Social** nasceu da necessidade de facilitar a conexão entre jogadore
 | Tecnologia | Versão | Finalidade |
 |------------|--------|------------|
 | Angular | 19.0.5 | Framework principal |
-| TypeScript | 5.4.5 | Linguagem |
+| TypeScript | 5.5.4 | Linguagem |
 | RxJS | 7.8.1 | Programação reativa |
 | PWA | - | Progressive Web App |
 | CSS3 | - | Estilização |
-| HTML5 | - | Estrutura |
 
 ### DevOps & Ferramentas
 | Ferramenta | Finalidade |
@@ -114,13 +88,13 @@ O **Guilda Social** nasceu da necessidade de facilitar a conexão entre jogadore
 | Docker Compose | Orquestração de containers |
 | Git | Controle de versão |
 | GitHub | Repositório remoto |
-| Figma | Design de interface |
 
 ---
 
 ## 🏗️ Arquitetura
+
 ┌─────────────────────────────────────────────────────────────┐
-│ Frontend (Angular 19) │
+│ Frontend (Angular 19 + PWA) │
 │ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ │
 │ │ Login │ │Cadastro │ │Sugestões│ │ Perfil │ │
 │ └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘ │
@@ -149,11 +123,9 @@ O **Guilda Social** nasceu da necessidade de facilitar a conexão entre jogadore
 ┌─────────────────────────────────────────────────────────────┐
 │ PostgreSQL Database │
 │ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ │
-│ │ usuarios │ │ jogos │ │ matches │ │ grupos │ │
+│ │ usuarios │ │ matches │ │ mensagens│ │ jogos │ │
 │ └──────────┘ └──────────┘ └──────────┘ └──────────┘ │
 └─────────────────────────────────────────────────────────────┘
-
-text
 
 ---
 
@@ -168,7 +140,6 @@ text
 ### Opcionais (para desenvolvimento)
 - **Docker** e **Docker Compose**
 - **Angular CLI** (`npm install -g @angular/cli`)
-- **IntelliJ IDEA** ou **VS Code**
 
 ---
 
@@ -177,150 +148,61 @@ text
 ### Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/guilda-social.git
+git clone https://github.com/dntfindmel/guilda-social.git
 cd guilda-social
-Opção 1: Execução com Docker (Recomendado)
-bash
-# Iniciar todos os serviços
-docker-compose up -d
+```
 
-# Ver logs
-docker-compose logs -f
-
-# Parar serviços
-docker-compose down
-Opção 2: Execução Local
-Backend
-bash
-cd backend
-
-# Compilar
-./mvnw clean compile
-
-# Executar
-./mvnw spring-boot:run
-
-# Build para produção
-./mvnw clean package -DskipTests
-java -jar target/guilda-social-backend-1.0.0.jar
-Frontend
-bash
-cd frontend
-
-# Instalar dependências
-npm install
-
-# Executar em desenvolvimento
-npm start
-
-# Build para produção (PWA)
-npm run build -- --configuration production
-Banco de Dados (PostgreSQL)
-bash
-# Docker
-docker run --name guilda-postgres \
-  -e POSTGRES_DB=guilda_social \
-  -e POSTGRES_USER=guilda_user \
-  -e POSTGRES_PASSWORD=guilda_pass \
-  -p 5432:5432 \
-  -d postgres:16-alpine
-
-# Local (Linux/macOS)
-sudo -u postgres psql
-CREATE DATABASE guilda_social;
-CREATE USER guilda_user WITH PASSWORD 'guilda_pass';
-GRANT ALL PRIVILEGES ON DATABASE guilda_social TO guilda_user;
-Acessar a aplicação
-Serviço	URL
-Frontend (PWA)	http://localhost:4200
-Backend API	http://localhost:8080/api
-Swagger UI	http://localhost:8080/swagger-ui.html
-📁 Estrutura do Projeto
-text
+## Estrutura do Projeto
 guilda-social/
-├── backend/                          # Spring Boot Backend
+├── backend/                         # Spring Boot Backend
 │   ├── src/main/java/com/guildasocial/
-│   │   ├── api/                      # Controllers, DTOs, Exceptions
-│   │   │   ├── controller/           # Endpoints REST
-│   │   │   ├── dto/                  # Data Transfer Objects
-│   │   │   └── exception/            # Exception handlers
-│   │   ├── config/                   # Configurações
-│   │   │   ├── SecurityConfig.java   # Segurança JWT
-│   │   │   ├── CorsConfig.java       # CORS
-│   │   │   └── ModelMapperConfig.java
-│   │   ├── domain/                   # Domínio da aplicação
-│   │   │   ├── model/                # Entidades JPA
-│   │   │   ├── repository/           # Repositórios
-│   │   │   └── service/              # Regras de negócio
-│   │   └── security/                 # JWT e autenticação
+│   │   ├── api/                     # Controllers, DTOs, Exceptions
+│   │   ├── config/                  # Configurações (CORS, Security, etc.)
+│   │   ├── domain/                  # Models, Repositories, Services
+│   │   └── security/                # JWT e autenticação
 │   └── src/main/resources/
-│       ├── application.properties    # Configurações
-│       └── db/migration/             # Flyway migrations
-├── frontend/                         # Angular Frontend
+│       ├── application.properties
+│       ├── application-docker.properties
+│       └── db/migration/            # Flyway migrations
+├── frontend/                        # Angular Frontend
 │   ├── src/app/
-│   │   ├── core/                     # Serviços, guards, interceptors
-│   │   │   ├── guards/               # AuthGuard, LoginGuard
-│   │   │   ├── interceptors/         # AuthInterceptor
-│   │   │   ├── models/               # Interfaces TypeScript
-│   │   │   └── services/             # AuthService, MatchService
-│   │   ├── features/                 # Funcionalidades
-│   │   │   ├── auth/                 # Login e Cadastro
-│   │   │   └── matches/              # Sugestões e Detalhe
-│   │   ├── layout/                   # Componentes de layout
-│   │   │   └── header/               # Header com logout
-│   │   └── shared/                   # Componentes compartilhados
-│   └── src/assets/                   # Imagens, ícones
-├── database/                         # Scripts SQL
-│   └── init/                         # Inicialização do banco
-├── docker-compose.yml                # Orquestração Docker
-├── .gitignore
+│   │   ├── core/                    # Services, Guards, Interceptors
+│   │   ├── features/                # Telas (login, cadastro, sugestões, chat, perfil)
+│   │   ├── layout/                  # Header, Bottom Nav
+│   │   └── shared/                  # Componentes compartilhados
+│   ├── src/assets/                  # Imagens, ícones
+│   └── src/manifest.webmanifest     # PWA manifest
+├── database/                        # Scripts SQL
+│   └── init/
+│       ├── 01-schema.sql
+│       └── 02-insert-jogos.sql
+├── docker-compose.yml
 └── README.md
-📡 API Endpoints
-Autenticação
-Método	Endpoint	Descrição
-POST	/api/auth/login	Autenticar usuário
-Usuários
-Método	Endpoint	Descrição
-POST	/api/usuarios	Criar novo usuário
-GET	/api/usuarios/{id}	Buscar usuário por ID
-GET	/api/usuarios	Listar todos usuários
-PUT	/api/usuarios/{id}	Atualizar usuário
-DELETE	/api/usuarios/{id}	Desativar usuário
-Matches
-Método	Endpoint	Descrição
-GET	/api/matches/sugestoes/{usuarioId}	Obter sugestões
-POST	/api/matches/solicitar/{usuarioId}	Enviar solicitação
-GET	/api/matches/meus-matches/{usuarioId}	Meus matches
-🗄️ Banco de Dados
-Modelo Entidade-Relacionamento
-text
-┌─────────────┐     ┌─────────────────┐     ┌─────────────┐
-│  usuarios   │────▶│ perfis_jogador  │────▶│preferencias │
-├─────────────┤     ├─────────────────┤     │  _jogo      │
-│ id (PK)     │     │ id (PK)         │     ├─────────────┤
-│ nome        │     │ usuario_id (FK) │     │ id (PK)     │
-│ email (UK)  │     │ estilo_jogo     │     │ perfil_id   │
-│ senha       │     │ descricao       │     │ jogo_id     │
-│ data_nasc   │     │ limite_distancia│     │ nivel_inter │
-│ cidade      │     └─────────────────┘     └──────┬──────┘
-│ estado      │                                   │
-│ latitude    │     ┌─────────────┐               │
-│ longitude   │     │   jogos     │◄──────────────┘
-│ descricao   │     ├─────────────┤
-│ foto_perfil │     │ id (PK)     │
-│ data_cadastro│    │ nome        │
-│ ativo       │     │ tipo        │
-│ ultimo_login│     │ min_jogadores│
-└─────────────┘     │ max_jogadores│
-                    └─────────────┘
-Scripts SQL
-Os scripts de criação do banco estão em:
 
-database/init/01-schema.sql - Estrutura das tabelas
+### 📡 API Endpoints
+Aqui está a sua lista de endpoints organizada em uma única tabela Markdown, separada por categorias para facilitar a leitura:
 
-database/init/02-insert-jogos.sql - Dados iniciais (jogos)
+| Categoria | Método | Endpoint | Descrição |
+| --- | --- | --- | --- |
+| **Autenticação** | `POST` | `/api/auth/login` | Autenticar usuário |
+|  | `POST` | `/api/auth/recuperar-senha` | Solicitar recuperação de senha |
+|  | `POST` | `/api/auth/redefinir-senha` | Redefinir senha com token |
+| **Usuários** | `POST` | `/api/usuarios` | Criar novo usuário |
+|  | `GET` | `/api/usuarios/{id}` | Buscar usuário por ID |
+|  | `GET` | `/api/usuarios` | Listar todos usuários |
+|  | `PUT` | `/api/usuarios/{id}` | Atualizar usuário |
+|  | `DELETE` | `/api/usuarios/{id}` | Desativar usuário |
+| **Perfil** | `GET` | `/api/perfil/{usuarioId}` | Buscar perfil completo |
+|  | `PUT` | `/api/perfil/{usuarioId}` | Atualizar perfil |
+| **Upload** | `POST` | `/api/upload/foto/{usuarioId}` | Upload de foto de perfil |
+|  | `DELETE` | `/api/upload/foto/{usuarioId}` | Remover foto de perfil |
+| **Matches e Chat** | `GET` | `/api/matches/sugestoes/{usuarioId}` | Obter sugestões de jogadores |
+|  | `POST` | `/api/matches/solicitar/{usuarioId}` | Enviar solicitação de match |
+|  | `GET` | `/api/chat/matches/{usuarioId}` | Listar conversas do usuário |
+|  | `GET` | `/api/chat/mensagens/{matchId}` | Buscar mensagens de um match |
+|  | `POST` | `/api/chat/mensagens/{matchId}` | Enviar mensagem |
 
-📱 PWA (Progressive Web App)
+### 📱 PWA (Progressive Web App)
 O Guilda Social é um PWA, o que significa que pode ser instalado como um aplicativo nativo no celular ou computador.
 
 Funcionalidades PWA
@@ -332,48 +214,20 @@ Funcionalidades PWA
 
 ✅ Manifest para personalização
 
-✅ Notificações push (em desenvolvimento)
+✅ Tela de splash
 
-Como instalar
-No celular (Android/iOS)
-Abra o site no Chrome/Safari
-
-Toque no menu (⋮) → "Adicionar à tela inicial"
-
-Confirme a instalação
-
-No computador (Chrome/Edge)
-Abra o site
-
-Clique no ícone de instalação na barra de endereço
-
-Ou vá em Menu → "Instalar aplicativo"
-
-📅 Sprints do Projeto
+### 📅 Sprints do Projeto
 Sprint	Período	Status	Entregas
 Sprint 1	Semana 1-2	✅ Concluída	Cadastro, Perfil, Interesses
 Sprint 2	Semana 3-4	✅ Concluída	Login, Autenticação JWT, Guards
 Sprint 3	Semana 5-6	✅ Concluída	Matchmaking, Sugestões, Cards
-Sprint 4	Semana 7-8	🔄 Em desenvolvimento	Perfil, Edição, Configurações
-Sprint 5	Semana 9-10	⏳ Pendente	Grupos, Chat, Eventos
-Sprint 6	Semana 11-12	⏳ Pendente	Notificações, PWA completo
-```
+Sprint 4	Semana 7-8	✅ Concluída	Perfil, Edição, Configurações
+Sprint 5	Semana 9-10	✅ Concluída	Chat, Grupos, Mensagens
 
-## 👥 Contribuidores
-- Nome	Papel	GitHub
-- Melyssa Vitória da Silva Moya	Desenvolvedora Full Stack	@melyssamoya
+### 👥 Contribuidores
+Melyssa Vitória da Silva Moya	Desenvolvedora Full Stack	@dntfindmel
 
-## 📄 Licença
-- Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
+### 📄 Licença
+Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
 
-## 📞 Contato
-- Email: moyamelyssa@gmail.com
-
-GitHub: github.com/guilda-social
-
-## 🙏 Agradecimentos
-- FATEC Ipiranga - Pastor Enéas Tognini
-- Laboratório de Engenharia de Software
-- Comunidade open source pelas ferramentas incríveis
-  
 Desenvolvido com 💛 para conectar jogadores 🎮

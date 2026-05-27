@@ -53,7 +53,6 @@ public class Grupo {
     )
     private List<Usuario> membros = new ArrayList<>();
 
-    // Getters e Setters
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
 

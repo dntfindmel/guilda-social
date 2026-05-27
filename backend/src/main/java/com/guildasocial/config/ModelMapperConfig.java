@@ -16,15 +16,13 @@ public class ModelMapperConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-        
-        // Configuração do ModelMapper
+
         modelMapper.getConfiguration()
             .setMatchingStrategy(MatchingStrategies.STRICT)
             .setSkipNullEnabled(true)
             .setFieldMatchingEnabled(true)
             .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
-        
-        // Converter de String para Date
+
         Converter<String, Date> stringToDate = new Converter<String, Date>() {
             @Override
             public Date convert(org.modelmapper.spi.MappingContext<String, Date> context) {
@@ -40,10 +38,9 @@ public class ModelMapperConfig {
                 }
             }
         };
-        
-        // Registrar o converter
+
         modelMapper.addConverter(stringToDate);
-        
+
         return modelMapper;
     }
 }

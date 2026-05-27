@@ -40,7 +40,6 @@ public class Usuario {
     @Column(nullable = false, length = 2)
     private String estado;
 
-    // CORRIGIDO: remover precision e scale
     @Column
     private Double latitude;
 
@@ -72,10 +71,8 @@ public class Usuario {
     @Column(name = "distancia_maxima_km")
     private Integer distanciaMaximaKm = 20;
 
-    // Construtor padrão
     public Usuario() {}
 
-    // Getters e Setters
     public UUID getId() {
         return id;
     }
@@ -196,7 +193,6 @@ public class Usuario {
         this.ultimoLogin = ultimoLogin;
     }
 
-    // Getters e Setters
     public String getResetToken() { return resetToken; }
     public void setResetToken(String resetToken) { this.resetToken = resetToken; }
 

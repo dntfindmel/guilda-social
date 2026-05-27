@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -41,7 +42,7 @@ public class ChatService {
         mensagem.setMatch(match);
         mensagem.setRemetenteId(remetenteId);
         mensagem.setConteudo(conteudo);
-        mensagem.setDataEnvio(LocalDateTime.now());
+        mensagem.setDataEnvio(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         mensagem.setLida(false);
 
         return mensagemRepository.save(mensagem);
@@ -58,14 +59,11 @@ public class ChatService {
         allMatches.addAll(matches1);
         allMatches.addAll(matches2);
 
-        // Para cada match, buscar apenas a última mensagem (sem carregar a lista completa)
         for (Match match : allMatches) {
             try {
                 List<Mensagem> mensagens = mensagemRepository.findByMatchIdOrderByDataEnvioAsc(match.getId());
                 if (!mensagens.isEmpty()) {
-                    // Criar uma nova instância apenas com os dados necessários
                     Mensagem ultima = mensagens.get(mensagens.size() - 1);
-                    // Criar uma cópia para evitar o loop
                     Mensagem copia = new Mensagem();
                     copia.setId(ultima.getId());
                     copia.setConteudo(ultima.getConteudo());
