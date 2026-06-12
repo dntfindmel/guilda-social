@@ -2,40 +2,47 @@
   <app-header></app-header>
 
   <div class="sugestoes-content">
+    <!-- Loading -->
     <div class="loading-container" *ngIf="loading">
       <div class="spinner"></div>
       <p>Carregando perfis...</p>
     </div>
 
+    <!-- Error -->
     <div class="error-container" *ngIf="errorMessage && !loading">
       <p>{{ errorMessage }}</p>
       <button class="btn-retry" (click)="recarregar()">Tentar novamente</button>
     </div>
 
     <div *ngIf="!loading && !errorMessage">
+      <!-- Tem sugestões -->
       <div *ngIf="sugestoes.length > 0 && currentCard">
+        <!-- Badge de status -->
         <div class="status-badge">
           <span class="online-dot"></span>
           ATIVO AGORA
         </div>
 
+        <!-- Card Principal -->
         <div class="card" [class.animate-out]="animating">
+          <!-- Imagem de fundo -->
           <div class="card-bg" *ngIf="getFotoUrl(currentCard)" [style.backgroundImage]="'url(' + getFotoUrl(currentCard) + ')'"></div>
           <div class="card-bg card-bg-gradient" *ngIf="!getFotoUrl(currentCard)"></div>
           <div class="card-overlay"></div>
 
+          <!-- Conteúdo do Card -->
           <div class="card-content">
             <div class="card-header">
-              <div class="level-badge">LVL {{ getNivelAleatorio(currentCard.id) }}</div>
+              <div class="level-badge">LVL {{ currentCard.nivel }}</div>
             </div>
 
             <div class="card-info">
-              <h2>{{ currentCard.nome }}, {{ getIdadeAleatoria(currentCard.id) }}</h2>
-              <p class="distance">📍 À {{ getDistanciaAleatoria(currentCard.id) }}km de você</p>
+              <h2>{{ currentCard.nome }}, {{ currentCard.idade }}</h2>
+              <p class="distance">📍 À {{ currentCard.distancia }}km de você</p>
             </div>
 
             <div class="tags">
-              <span class="tag" *ngFor="let tag of getTags(currentCard)">{{ tag }}</span>
+              <span class="tag" *ngFor="let tag of currentCard.tags">{{ tag }}</span>
             </div>
 
             <div class="description">
@@ -44,11 +51,13 @@
           </div>
         </div>
 
+        <!-- Botões de Ação -->
         <div class="action-buttons">
           <button class="btn-passar" (click)="passar()">✖ Passar</button>
           <button class="btn-chat" (click)="solicitarChat()">💬 Solicitar chat</button>
         </div>
 
+        <!-- Cards Online Recentemente -->
         <div class="recent-section" *ngIf="sugestoes.length > 1">
           <h3>ONLINE RECENTEMENTE</h3>
           <div class="recent-cards">
@@ -60,15 +69,16 @@
                 </div>
               </div>
               <div class="recent-info">
-                <div class="recent-name">{{ jogador.nome }}, {{ getIdadeAleatoria(jogador.id) }}</div>
-                <div class="recent-distance">📍 À {{ getDistanciaAleatoria(jogador.id) }}km de você</div>
-                <div class="recent-level">LVL {{ getNivelAleatorio(jogador.id) }}</div>
+                <div class="recent-name">{{ jogador.nome }}, {{ jogador.idade }}</div>
+                <div class="recent-distance">📍 À {{ jogador.distancia }}km de você</div>
+                <div class="recent-level">LVL {{ jogador.nivel }}</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Mensagem sem sugestões -->
       <div class="no-more-cards" *ngIf="sugestoes.length === 0 || !currentCard">
         <div class="empty-icon">🎲</div>
         <h3>Sem perfis que combinem com você por enquanto</h3>

@@ -220,4 +220,23 @@ export class EditarPerfilComponent implements OnInit {
   cancelar(): void {
     this.router.navigate(['/perfil']);
   }
+
+  onlyNumbers(event: KeyboardEvent): boolean {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
+
+  formatarTelefone(event: any): void {
+    let valor = event.target.value;
+    valor = valor.replace(/\D/g, '');
+    if (valor.length > 11) {
+      valor = valor.substring(0, 11);
+    }
+    event.target.value = valor;
+    this.editForm.get('telefone')?.setValue(valor, { emitEvent: false });
+  }
 }

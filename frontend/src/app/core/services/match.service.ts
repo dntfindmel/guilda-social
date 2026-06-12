@@ -18,12 +18,6 @@ export class MatchService {
     return this.http.get<Sugestao[]>(`${this.apiUrl}/sugestoes/${usuarioId}`);
   }
 
-  // Enviar solicitação de match
-  enviarSolicitacao(usuarioId: string, alvoId: string): Observable<Match> {
-    const payload = { alvoId: alvoId };
-    return this.http.post<Match>(`${this.apiUrl}/solicitar/${usuarioId}`, payload);
-  }
-
   // Lista de matches para chat
   getMeusMatches(usuarioId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.chatUrl}/matches/${usuarioId}`);
@@ -44,5 +38,17 @@ export class MatchService {
     // match.service.ts
   getConversasNaoLidas(usuarioId: string): Observable<number> {
     return this.http.get<number>(`${this.chatUrl}/nao-lidas/${usuarioId}`);
+  }
+
+  enviarSolicitacao(usuarioId: string, alvoId: string): Observable<Match> {
+    console.log('Enviando solicitação:', { usuarioId, alvoId });
+    const payload = { alvoId: alvoId };
+    return this.http.post<Match>(`${this.apiUrl}/solicitar/${usuarioId}`, payload);
+  }
+
+  passarSugestao(usuarioId: string, alvoId: string): Observable<any> {
+    console.log('Passando sugestão:', { usuarioId, alvoId });
+    const payload = { alvoId: alvoId };
+    return this.http.post(`${this.apiUrl}/passar/${usuarioId}`, payload);
   }
 }

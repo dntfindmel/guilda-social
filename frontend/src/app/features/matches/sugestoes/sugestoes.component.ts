@@ -24,11 +24,6 @@ export class SugestoesComponent implements OnInit {
   errorMessage = '';
   animating = false;
 
-  niveis: Map<string, number> = new Map();
-  distancias: Map<string, number> = new Map();
-  idades: Map<string, number> = new Map();
-  tagsList: Map<string, string[]> = new Map();
-
   ngOnInit(): void {
     this.carregarSugestoes();
   }
@@ -44,19 +39,14 @@ export class SugestoesComponent implements OnInit {
 
     this.matchService.getSugestoes(usuarioId).subscribe({
       next: (data) => {
+        console.log('Sugestões recebidas:', data);
         this.sugestoes = data;
         this.currentIndex = 0;
-        this.sugestoes.forEach(jogador => {
-          this.niveis.set(jogador.id, Math.floor(Math.random() * 60) + 20);
-          this.distancias.set(jogador.id, Math.floor(Math.random() * 10) + 1);
-          this.idades.set(jogador.id, Math.floor(Math.random() * 10) + 20);
-          this.tagsList.set(jogador.id, ['MMORPG', 'Voice Chat', 'Late Night']);
-        });
         this.loading = false;
       },
       error: (error) => {
-        console.error('Erro:', error);
-        this.errorMessage = 'Erro ao carregar sugestões';
+        console.error('Erro ao carregar sugestões:', error);
+        this.errorMessage = 'Erro ao carregar sugestões. Tente novamente.';
         this.loading = false;
       }
     });
@@ -70,83 +60,79 @@ export class SugestoesComponent implements OnInit {
   }
 
   getFotoUrl(jogador: Sugestao | null): string {
-    if (!jogador || !jogador.fotoPerfil) return '';
+    if (!jogador?.fotoPerfil) return '';
     if (jogador.fotoPerfil.startsWith('http')) {
       return jogador.fotoPerfil;
     }
     return `http://localhost:8080${jogador.fotoPerfil}`;
   }
 
-  getNivelAleatorio(jogadorId?: string): number {
-    if (jogadorId && this.niveis.has(jogadorId)) {
-      return this.niveis.get(jogadorId)!;
-    }
-    return Math.floor(Math.random() * 60) + 20;
-  }
-
-  getDistanciaAleatoria(jogadorId?: string): number {
-    if (jogadorId && this.distancias.has(jogadorId)) {
-      return this.distancias.get(jogadorId)!;
-    }
-    return Math.floor(Math.random() * 10) + 1;
-  }
-
-  getIdadeAleatoria(jogadorId?: string): number {
-    if (jogadorId && this.idades.has(jogadorId)) {
-      return this.idades.get(jogadorId)!;
-    }
-    return Math.floor(Math.random() * 10) + 20;
-  }
-
-  getTags(jogador: Sugestao | null): string[] {
-    if (!jogador || !jogador.id) return ['Gamer'];
-    if (this.tagsList.has(jogador.id)) {
-      return this.tagsList.get(jogador.id)!;
-    }
-    return ['MMORPG', 'Voice Chat', 'Late Night'];
-  }
-
   passar(): void {
-    if (this.animating) return;
+    if (this.animating || !this.currentCard) return;
     this.animating = true;
 
-    setTimeout(() => {
-      this.currentIndex++;
-      this.animating = false;
-    }, 300);
+    const usuarioId = this.authService.getUsuarioId();
+    if (!usuarioId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const cardPassado = this.currentCard;
+    console.log('Passando sugestão:', cardPassado.id);
+
+    this.matchService.passarSugestao(usuarioId, cardPassado.id).subscribe({
+      next: () => {
+        console.log('Sugestão passada com sucesso');
+        // Remover o card da lista
+        this.sugestoes = this.sugestoes.filter(s => s.id !== cardPassado.id);
+        this.currentIndex = 0;
+        this.animating = false;
+
+        if (this.sugestoes.length === 0) {
+          console.log('Não há mais sugestões');
+        }
+      },
+      error: (error) => {
+        console.error('Erro ao passar sugestão:', error);
+        this.animating = false;
+        alert('Erro ao passar sugestão. Tente novamente.');
+      }
+    });
   }
 
-solicitarChat(): void {
-  if (this.animating || !this.currentCard) return;
-  this.animating = true;
+  solicitarChat(): void {
+    if (this.animating || !this.currentCard) return;
+    this.animating = true;
 
-  const usuarioId = this.authService.getUsuarioId();
-  if (usuarioId && this.currentCard) {
-    this.matchService.enviarSolicitacao(usuarioId, this.currentCard.id).subscribe({
+    const usuarioId = this.authService.getUsuarioId();
+    if (!usuarioId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const card = this.currentCard;
+
+    this.matchService.enviarSolicitacao(usuarioId, card.id).subscribe({
       next: () => {
         alert('Solicitação enviada!');
-        this.router.navigate(['/chat']);
+        this.sugestoes = this.sugestoes.filter(s => s.id !== card.id);
+        this.currentIndex = 0;
         this.animating = false;
       },
-      error: () => {
-        alert('Erro ao enviar solicitação');
+      error: (error) => {
+        console.error('Erro ao enviar solicitação:', error);
+        let mensagem = 'Erro ao enviar solicitação. Tente novamente.';
+        if (error.error?.message) {
+          mensagem = error.error.message;
+        }
+        alert(mensagem);
         this.animating = false;
       }
     });
   }
-}
-
-jaSolicitou(jogadorId: string): boolean {
-    const solicitacoes = localStorage.getItem('solicitacoesEnviadas');
-    if (solicitacoes) {
-        const enviadas = JSON.parse(solicitacoes);
-        return enviadas.includes(jogadorId);
-    }
-    return false;
-}
-
 
   recarregar(): void {
+    console.log('Recarregando sugestões...');
     this.carregarSugestoes();
   }
 }

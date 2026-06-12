@@ -140,3 +140,14 @@ h2{font-size:1.1rem;color:#221E10;margin-bottom:16px}
   font-size: 0.8rem;
   color: #64748B;
 }
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

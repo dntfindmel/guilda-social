@@ -27,6 +27,7 @@ export class LoginComponent {
   modoRecuperacao = false;
 
   constructor() {
+    // Campos de login começam vazios
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       senha: ['', [Validators.required]]

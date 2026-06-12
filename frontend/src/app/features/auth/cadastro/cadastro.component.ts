@@ -40,7 +40,7 @@ export class CadastroComponent implements OnInit {
       senha: ['', [Validators.required, Validators.minLength(6)]],
       confirmarSenha: ['', Validators.required],
       dataNascimento: ['', [Validators.required, this.validarIdade]],
-      telefone: ['', [Validators.pattern(/^[0-9]{10,11}$/)]],
+      telefone: ['', [Validators.pattern(/^\d{10,11}$/)]],
       descricao: ['', [Validators.maxLength(500)]],
       interesseTabuleiro: [false],
       interesseCartas: [false],
@@ -81,6 +81,7 @@ export class CadastroComponent implements OnInit {
 
     this.geolocationService.getCurrentPosition().subscribe({
       next: (location) => {
+        console.log('📍 Localização capturada:', location);
         this.cadastroForm.patchValue({
           latitude: location.lat,
           longitude: location.lng
@@ -92,6 +93,7 @@ export class CadastroComponent implements OnInit {
       error: (error) => {
         console.error('Erro ao obter localização:', error);
         this.carregandoLocalizacao = false;
+        this.errorMessage = 'Não foi possível detectar sua localização. Verifique as permissões do navegador.';
       }
     });
   }
@@ -189,5 +191,24 @@ export class CadastroComponent implements OnInit {
         this.markFormGroupTouched(control);
       }
     });
+  }
+
+  onlyNumbers(event: KeyboardEvent): boolean {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
+
+  formatarTelefone(event: any): void {
+    let valor = event.target.value;
+    valor = valor.replace(/\D/g, '');
+    if (valor.length > 11) {
+      valor = valor.substring(0, 11);
+    }
+    event.target.value = valor;
+    this.cadastroForm.get('telefone')?.setValue(valor, { emitEvent: false });
   }
 }
