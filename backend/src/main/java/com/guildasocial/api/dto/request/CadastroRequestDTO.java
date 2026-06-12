@@ -10,7 +10,7 @@ public class CadastroRequestDTO {
     private String email;
     private String senha;
     private Date dataNascimento;
-    private String telefone;
+    private String telefone;  // ← APENAS UMA DECLARAÇÃO
     private String cidade;
     private String estado;
     private Double latitude;
@@ -63,7 +63,7 @@ public class CadastroRequestDTO {
         this.dataNascimento = dataNascimento;
     }
 
-    @Pattern(regexp = "^\\(?\\d{2}\\)?\\s?\\d{4,5}-?\\d{4}$", message = "Telefone inválido")
+    @Pattern(regexp = "^$|^\\d{10,11}$", message = "Telefone deve conter apenas números (10 ou 11 dígitos)")
     public String getTelefone() {
         return telefone;
     }

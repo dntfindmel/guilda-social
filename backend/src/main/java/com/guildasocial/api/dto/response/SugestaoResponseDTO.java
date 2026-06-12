@@ -7,26 +7,13 @@ public class SugestaoResponseDTO {
     private String nome;
     private String cidade;
     private String estado;
-    private String estiloJogo;
     private String descricao;
     private String fotoPerfil;
     private Integer nivelAfinidade;
-
-    // Construtores
-    public SugestaoResponseDTO() {}
-
-    public SugestaoResponseDTO(UUID id, String nome, String cidade, String estado,
-                                String estiloJogo, String descricao, String fotoPerfil,
-                                Integer nivelAfinidade) {
-        this.id = id;
-        this.nome = nome;
-        this.cidade = cidade;
-        this.estado = estado;
-        this.estiloJogo = estiloJogo;
-        this.descricao = descricao;
-        this.fotoPerfil = fotoPerfil;
-        this.nivelAfinidade = nivelAfinidade;
-    }
+    private Integer nivel;
+    private Integer distancia;
+    private Integer idade;
+    private String[] tags;
 
     // Getters e Setters
     public UUID getId() { return id; }
@@ -41,9 +28,6 @@ public class SugestaoResponseDTO {
     public String getEstado() { return estado; }
     public void setEstado(String estado) { this.estado = estado; }
 
-    public String getEstiloJogo() { return estiloJogo; }
-    public void setEstiloJogo(String estiloJogo) { this.estiloJogo = estiloJogo; }
-
     public String getDescricao() { return descricao; }
     public void setDescricao(String descricao) { this.descricao = descricao; }
 
@@ -52,5 +36,16 @@ public class SugestaoResponseDTO {
 
     public Integer getNivelAfinidade() { return nivelAfinidade; }
     public void setNivelAfinidade(Integer nivelAfinidade) { this.nivelAfinidade = nivelAfinidade; }
-    
+
+    public Integer getNivel() { return nivel; }
+    public void setNivel(Integer nivel) { this.nivel = nivel; }
+
+    public Integer getDistancia() { return distancia; }
+    public void setDistancia(Integer distancia) { this.distancia = distancia; }
+
+    public Integer getIdade() { return idade; }
+    public void setIdade(Integer idade) { this.idade = idade; }
+
+    public String[] getTags() { return tags; }
+    public void setTags(String[] tags) { this.tags = tags; }
 }

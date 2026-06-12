@@ -28,22 +28,17 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
 
     boolean existsByUsuario1AndUsuario2(Usuario usuario1, Usuario usuario2);
 
+    // Verificar se o usuário atual já passou o alvo
     @Query("SELECT CASE WHEN COUNT(m) > 0 THEN true ELSE false END FROM Match m " +
-           "WHERE ((m.usuario1.id = :usuarioId AND m.usuario2.id = :alvoId) OR " +
-           "(m.usuario1.id = :alvoId AND m.usuario2.id = :usuarioId)) " +
-           "AND m.status = 'PASSADO'")
+          "WHERE m.usuario1.id = :usuarioId AND m.usuario2.id = :alvoId AND m.status = 'PASSADO'")
     boolean existeMatchPassado(@Param("usuarioId") UUID usuarioId,
                                 @Param("alvoId") UUID alvoId);
 
+    // Verificar se o usuário atual já enviou solicitação PENDENTE
     @Query("SELECT CASE WHEN COUNT(m) > 0 THEN true ELSE false END FROM Match m " +
-           "WHERE m.usuario1.id = :usuarioId AND m.usuario2.id = :alvoId AND m.status = 'PENDENTE'")
+          "WHERE m.usuario1.id = :usuarioId AND m.usuario2.id = :alvoId AND m.status = 'PENDENTE'")
     boolean existeSolicitacaoEnviada(@Param("usuarioId") UUID usuarioId,
                                       @Param("alvoId") UUID alvoId);
-
-    @Query("SELECT CASE WHEN COUNT(m) > 0 THEN true ELSE false END FROM Match m " +
-           "WHERE m.usuario1.id = :alvoId AND m.usuario2.id = :usuarioId AND m.status = 'PENDENTE'")
-    boolean existeSolicitacaoRecebida(@Param("usuarioId") UUID usuarioId,
-                                       @Param("alvoId") UUID alvoId);
 
     @Query("SELECT CASE WHEN COUNT(m) > 0 THEN true ELSE false END FROM Match m " +
            "WHERE ((m.usuario1.id = :usuarioId AND m.usuario2.id = :alvoId) OR " +
@@ -52,9 +47,4 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
     boolean existeMatchAceito(@Param("usuarioId") UUID usuarioId,
                                @Param("alvoId") UUID alvoId);
 
-    @Query("SELECT CASE WHEN COUNT(m) > 0 THEN true ELSE false END FROM Match m " +
-           "WHERE ((m.usuario1.id = :usuarioId AND m.usuario2.id = :alvoId) OR " +
-           "(m.usuario1.id = :alvoId AND m.usuario2.id = :usuarioId))")
-    boolean existeQualquerInteracao(@Param("usuarioId") UUID usuarioId,
-                                     @Param("alvoId") UUID alvoId);
 }

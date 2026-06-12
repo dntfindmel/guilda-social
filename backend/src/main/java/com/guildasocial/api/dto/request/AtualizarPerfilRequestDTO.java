@@ -8,7 +8,7 @@ public class AtualizarPerfilRequestDTO {
     @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres")
     private String nome;
 
-    @Pattern(regexp = "^\\(?\\d{2}\\)?\\s?\\d{4,5}-?\\d{4}$", message = "Telefone inválido")
+    @Pattern(regexp = "^$|^\\d{10,11}$", message = "Telefone deve conter apenas números (10 ou 11 dígitos)")
     private String telefone;
 
     @Size(max = 500, message = "Descrição deve ter no máximo 500 caracteres")
@@ -17,7 +17,7 @@ public class AtualizarPerfilRequestDTO {
     private String cidade;
     private String estado;
     private String fotoPerfil;
-    private Integer distanciaMaximaKm;  
+    private Integer distanciaMaximaKm;
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
